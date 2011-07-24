@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Patrick Huesler"]
   s.email       = ["patrick.huesler@gmail.com"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = "Asset packaging for the rest of us"
+  s.description = "A framework agnostic packaging solution for your assets: version files, combine them, minify them and create a manifest"
 
   s.rubyforge_project = "bagit"
 
