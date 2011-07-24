@@ -3,10 +3,10 @@
 A framework agnostic packaging solution to speed up client side
 rendering by using the following techniques:
 
-* Generating versioned assets to maximize cache efficienzy
+* Generating versioned assets to maximize cache efficiency
 * Combine, minify and lint javascript and css files to reduce bandwidth
-* Zip assets to further reduce bandwitdth consumption
-* Generating a file manifest to lookup an assets location
+* Zip assets to further reduce bandwidth consumption
+* Generating a file manifest to lookup an asset's location
 * Rewrite urls in css files with the versioned file name
 * Bundle up the assets as a zip file
 
