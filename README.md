@@ -1,4 +1,4 @@
-# bagit
+# bagger
 
 A framework agnostic packaging solution to speed up client side
 rendering by using the following techniques:

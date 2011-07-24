@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "bagit/version"
+require "bagger/version"
 
 Gem::Specification.new do |s|
-  s.name        = "bagit"
+  s.name        = "bagger"
   s.version     = Bagit::VERSION
   s.authors     = ["Patrick Huesler"]
   s.email       = ["patrick.huesler@gmail.com"]
@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.summary     = "Asset packaging for the rest of us"
   s.description = "A framework agnostic packaging solution for your assets: version files, combine them, minify them and create a manifest"
 
-  s.rubyforge_project = "bagit"
+  s.rubyforge_project = "bagger"
 
   s.add_dependency "json"
 

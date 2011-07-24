@@ -1,4 +1,4 @@
 source "http://rubygems.org"
 
-# Specify your gem's dependencies in bagit.gemspec
+# Specify your gem's dependencies in bagger.gemspec
 gemspec
