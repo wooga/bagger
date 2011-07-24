@@ -13,6 +13,8 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = "bagit"
 
+  s.add_dependency "json"
+
   s.add_development_dependency "rake"
   s.add_development_dependency "shoulda-context"
   s.add_development_dependency "mocha"

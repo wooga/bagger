@@ -6,3 +6,5 @@ require 'mocha'
 require 'shoulda-context'
 require 'bagit'
 
+TEST_TEMP_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', 'tmp'))
+
