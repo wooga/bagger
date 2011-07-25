@@ -31,3 +31,7 @@ rendering by using the following techniques:
 * Pass all tests on travisci.org
 * Examples on how to integrate it into the development workflow using
   tools like watch or supervisor
+
+## Tests
+
+check the build status on [travis.ci](http://travis-ci.org/wooga/bagger)
