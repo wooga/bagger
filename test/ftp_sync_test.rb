@@ -80,14 +80,14 @@ class FTPSyncTest < Test::Unit::TestCase
       @ftp_client_test_double.stubs(:ls).multiple_yields(
         ftp_string_for_filename("fake.3219C.txt"),
         ftp_string_for_filename("fake.3211C.txt"),
-        ftp_string_for_directory("subdir1"),
+        ftp_string_for_directory("subdir1")
       ).then.multiple_yields(
         ftp_string_for_filename("fake.2223C.txt"),
         ftp_string_for_filename("fake.2222C.txt"),
         ftp_string_for_directory("subdir2")
       ).then.multiple_yields(
         ftp_string_for_filename("fake.3333C.txt"),
-        ftp_string_for_filename("fake.3332C.txt"),
+        ftp_string_for_filename("fake.3332C.txt")
       )
       @ftp_client_test_double.stubs(:pwd).returns('/published', '/published', '/published/subdir1', '/published/subdir1', '/published/subdir1/subdir2')
       @manifest = ["/published/fake.3219C.txt", "/published/subdir1/fake.2223C.txt", "/published/subdir1/subdir2/fake.3333C.txt"]
