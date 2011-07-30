@@ -10,5 +10,7 @@ require "bagger/packager"
 require "bagger/version"
 
 module Bagger
-  # Your code goes here...
+  def self.bagit!(options)
+    Packager.new(options).package
+  end
 end
