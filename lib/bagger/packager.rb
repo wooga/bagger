@@ -1,10 +1,10 @@
 # encoding: UTF-8
 module Bagger
   class Packager
-    def initialize(source_dir, target_dir, asset_base_url,options = {:exclude_pattern => nil, :css_packager_options => {}})
-      @source_dir = source_dir
-      @target_dir = target_dir
-      @asset_base_url = asset_base_url
+    def initialize(options = {:exclude_pattern => nil, :css_packager_options => {}})
+      @source_dir = options[:source_dir]
+      @target_dir = options[:target_dir]
+      @asset_base_url = options[:target_host]
       @exclude_pattern = options[:exclude_pattern]
       @assets = Bagger::FileList.new(@source_dir, @exclude_pattern)
       @css_packager_options = options[:css_packager_options]
