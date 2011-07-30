@@ -33,7 +33,7 @@ class PackagerTest < Test::Unit::TestCase
       end
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
-                 :target_dir => TARGET_DIR,
+                 :target_dir => TARGET_DIR
                 )
       packager.generate_file_list
       json = JSON.parse(File.open(File.join(TARGET_DIR, 'file_info.json')).readlines.join)
@@ -46,7 +46,7 @@ class PackagerTest < Test::Unit::TestCase
       end
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
-                 :target_dir => TARGET_DIR,
+                 :target_dir => TARGET_DIR
                 )
       packager.generate_file_list
       list = JSON.parse(File.open(File.join(TARGET_DIR, 'file_info.json')).readlines.join)
@@ -60,7 +60,7 @@ class PackagerTest < Test::Unit::TestCase
       end
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
-                 :target_dir => TARGET_DIR,
+                 :target_dir => TARGET_DIR
                 )
       packager.generate_file_list
       list = JSON.parse(File.open(File.join(TARGET_DIR, 'file_info.json')).readlines.join)
@@ -75,7 +75,7 @@ class PackagerTest < Test::Unit::TestCase
       end
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
-                 :target_dir => TARGET_DIR,
+                 :target_dir => TARGET_DIR
                 )
       packager.generate_file_list
       list = JSON.parse(File.open(File.join(TARGET_DIR, 'file_info.json')).readlines.join)
@@ -89,7 +89,7 @@ class PackagerTest < Test::Unit::TestCase
       FileUtils.rm_rf(inexistent_target_dir)
       Bagger::Packager.new(
            :source_dir => SOURCE_DIR,
-           :target_dir => inexistent_target_dir,
+           :target_dir => inexistent_target_dir
           ).package
 
       assert File.exists?(inexistent_target_dir), 'target directory should be created'
@@ -101,7 +101,7 @@ class PackagerTest < Test::Unit::TestCase
       end
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
-                 :target_dir => TARGET_DIR,
+                 :target_dir => TARGET_DIR
                 )
       packager.package
       assert File.exists?(File.join(TARGET_DIR, "bar.png")), "File does not exist"
@@ -115,7 +115,7 @@ class PackagerTest < Test::Unit::TestCase
       end
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
-                 :target_dir => TARGET_DIR,
+                 :target_dir => TARGET_DIR
                 )
       packager.package      
       assert File.exists?(File.join(TARGET_DIR, "testdir1/subtestdir2/bar.png")), "File does not exist"
@@ -128,7 +128,7 @@ class PackagerTest < Test::Unit::TestCase
       end
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
-                 :target_dir => TARGET_DIR,
+                 :target_dir => TARGET_DIR
                 )
       packager.package
       assert File.exists?(File.join(TARGET_DIR, "bar.1956.png")), "File does not exist"
@@ -155,7 +155,7 @@ class PackagerTest < Test::Unit::TestCase
       end
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
-                 :target_dir => TARGET_DIR,
+                 :target_dir => TARGET_DIR
                 )
       packager.package
       assert File.exists?(File.join(TARGET_DIR, "some_file_without_extension.1956")), "File does not exist"
@@ -177,7 +177,7 @@ class PackagerTest < Test::Unit::TestCase
     should 'generate a json file in the source (public) dir because this file should not be cached by the cdn' do
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
-                 :target_dir => TARGET_DIR,
+                 :target_dir => TARGET_DIR
                 )
       packager.package
       assert File.exists?(File.join(SOURCE_DIR,"file_info.json")), "file could not be found"
@@ -191,7 +191,7 @@ class PackagerTest < Test::Unit::TestCase
       end
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
-                 :target_dir => TARGET_DIR,
+                 :target_dir => TARGET_DIR
                 )
       packager.package
       file_info = JSON.parse(File.read(File.join(SOURCE_DIR,"file_info.json")))

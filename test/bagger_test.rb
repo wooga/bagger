@@ -9,9 +9,7 @@ class BaggerTest < Test::Unit::TestCase
                   :target_dir => 'fake/test/dir'
                 }
       packager_mock = mock()
-      Bagger::Packager.expects(:new)
-                      .with(options)
-                      .returns(packager_mock)
+      Bagger::Packager.expects(:new).with(options).returns(packager_mock)
       packager_mock.expects(:package)
 
       Bagger.bagit!(options)
