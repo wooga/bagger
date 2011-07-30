@@ -1,5 +1,5 @@
 # encoding: UTF-8
-module Bagit
+module Bagger
   class CssPackager
     def initialize(source_dir, target_file, options = {})
       @source_dir = source_dir
