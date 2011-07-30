@@ -1,6 +1,6 @@
 # encoding: UTF-8
 module Bagger
-  class Packager
+  class Runner
 
     def initialize(options)
       @options = options

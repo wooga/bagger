@@ -5,7 +5,7 @@ class PackagerTest < Test::Unit::TestCase
   SOURCE_DIR = File.join(::TEST_TEMP_DIR, "packaging_fixtures") unless defined?(SOURCE_DIR)
   TARGET_DIR = File.join(::TEST_TEMP_DIR, "tmp", "packaging") unless defined?(TARGET_DIR)
   
-  Bagit::SVNInfo.silence_warnings = true
+  Bagger::SVNInfo.silence_warnings = true
   
   def setup
     FileUtils.mkdir_p(SOURCE_DIR)
@@ -18,7 +18,7 @@ class PackagerTest < Test::Unit::TestCase
   
   context 'generate_file_list' do
     should 'generate a json file' do
-      packager = Bagit::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
+      packager = Bagger::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
       packager.generate_file_list
       assert File.exists?(File.join(TARGET_DIR,"file_info.json")), "file could not be found"
     end
@@ -27,7 +27,7 @@ class PackagerTest < Test::Unit::TestCase
       FileUtils.chdir(SOURCE_DIR) do
         FileUtils.touch(["bar.png", "foo.png"])
       end      
-      packager = Bagit::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
+      packager = Bagger::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
       packager.generate_file_list
       json = JSON.parse(File.open(File.join(TARGET_DIR, 'file_info.json')).readlines.join)
       assert_equal Hash, json.class
@@ -37,7 +37,7 @@ class PackagerTest < Test::Unit::TestCase
       FileUtils.chdir(SOURCE_DIR) do
         FileUtils.touch(["bar.png"])
       end      
-      packager = Bagit::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
+      packager = Bagger::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
       packager.generate_file_list
       list = JSON.parse(File.open(File.join(TARGET_DIR, 'file_info.json')).readlines.join)
       assert_equal "bar.png", list["bar.png"]["url"]
@@ -48,7 +48,7 @@ class PackagerTest < Test::Unit::TestCase
         FileUtils.mkdir_p("testdir1/subtestdir2")
         FileUtils.touch(["testdir1/subtestdir2/foo.png"])
       end      
-      packager = Bagit::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
+      packager = Bagger::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
       packager.generate_file_list
       list = JSON.parse(File.open(File.join(TARGET_DIR, 'file_info.json')).readlines.join)
       assert_equal "testdir1/subtestdir2/foo.png", list["testdir1/subtestdir2/foo.png"]["url"]
@@ -60,7 +60,7 @@ class PackagerTest < Test::Unit::TestCase
           f.puts "some content"
         end
       end      
-      packager = Bagit::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
+      packager = Bagger::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
       packager.generate_file_list
       list = JSON.parse(File.open(File.join(TARGET_DIR, 'file_info.json')).readlines.join)
       assert_equal 13, list["bar.txt"]["size_in_bytes"]
@@ -71,7 +71,7 @@ class PackagerTest < Test::Unit::TestCase
     should "create the target directory if it does NOT exist" do
       inexistent_target_dir = File.join(TEST_TEMP_DIR, "inexistent_target_dir")
       FileUtils.rm_rf(inexistent_target_dir)
-      Bagit::Packager.new(SOURCE_DIR, inexistent_target_dir, 'http://test.host/').package
+      Bagger::Packager.new(SOURCE_DIR, inexistent_target_dir, 'http://test.host/').package
       assert File.exists?(inexistent_target_dir), 'target directory should be created'
     end
     
@@ -79,7 +79,7 @@ class PackagerTest < Test::Unit::TestCase
       FileUtils.chdir(SOURCE_DIR) do
         FileUtils.touch(["bar.png", "foo.png"])
       end
-      packager = Bagit::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
+      packager = Bagger::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
       packager.package
       assert File.exists?(File.join(TARGET_DIR, "bar.png")), "File does not exist"
       assert File.exists?(File.join(TARGET_DIR, "foo.png")), "File does not exist"
@@ -90,37 +90,37 @@ class PackagerTest < Test::Unit::TestCase
         FileUtils.mkdir_p("testdir1/subtestdir2")
         FileUtils.touch(["testdir1/subtestdir2/bar.png"])
       end
-      packager = Bagit::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
+      packager = Bagger::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
       packager.package      
       assert File.exists?(File.join(TARGET_DIR, "testdir1/subtestdir2/bar.png")), "File does not exist"
     end
     
     should "insert the scm revision right before the file extension" do
-      Bagit::SVNInfo.stubs(:revision_for_file).returns("1956")
+      Bagger::SVNInfo.stubs(:revision_for_file).returns("1956")
       FileUtils.chdir(SOURCE_DIR) do
         FileUtils.touch(["bar.png", "foo.png"])
       end
-      packager = Bagit::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
+      packager = Bagger::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
       packager.package      
       assert File.exists?(File.join(TARGET_DIR, "bar.1956.png")), "File does not exist"
     end
     
     should "insert a minor revision marker if present" do
-      Bagit::SVNInfo.stubs(:revision_for_file).returns("1956")
+      Bagger::SVNInfo.stubs(:revision_for_file).returns("1956")
       FileUtils.chdir(SOURCE_DIR) do
         FileUtils.touch(["bar.png", "foo.png"])
       end
-      packager = Bagit::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/', :revision_suffix => 'A')
+      packager = Bagger::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/', :revision_suffix => 'A')
       packager.package
       assert File.exists?(File.join(TARGET_DIR, "bar.1956A.png")), "File does not exist"      
     end
     
     should "handle files without an extension" do
-      Bagit::SVNInfo.stubs(:revision_for_file).returns("1956")
+      Bagger::SVNInfo.stubs(:revision_for_file).returns("1956")
       FileUtils.chdir(SOURCE_DIR) do
         FileUtils.touch(["some_file_without_extension"])
       end
-      packager = Bagit::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
+      packager = Bagger::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
       packager.package
       assert File.exists?(File.join(TARGET_DIR, "some_file_without_extension.1956")), "File does not exist"
     end
@@ -129,13 +129,13 @@ class PackagerTest < Test::Unit::TestCase
       FileUtils.chdir(SOURCE_DIR) do
         FileUtils.touch(["bar.png", "bar.txt"])
       end
-      packager = Bagit::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/', :exclude_pattern => "\.txt")
+      packager = Bagger::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/', :exclude_pattern => "\.txt")
       packager.package
       assert !File.exists?(File.join(TARGET_DIR, "bar.txt"))
     end
     
     should 'generate a json file in the source (public) dir because this file should not be cached by the cdn' do
-      packager = Bagit::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
+      packager = Bagger::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
       packager.package
       assert File.exists?(File.join(SOURCE_DIR,"file_info.json")), "file could not be found"
     end
@@ -146,7 +146,7 @@ class PackagerTest < Test::Unit::TestCase
           f.puts "some content"
         end
       end
-      packager = Bagit::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
+      packager = Bagger::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/')
       packager.package
       file_info = JSON.parse(File.read(File.join(SOURCE_DIR,"file_info.json")))
       assert_equal 13, file_info["bar.txt"]["size_in_bytes"]
@@ -161,7 +161,7 @@ class PackagerTest < Test::Unit::TestCase
         end
         @combined_css_file = 'style/combined.css'
         @hashed_css_file = File.join(TARGET_DIR, 'style/combined.ff4c8ff0.css')
-        @packager = Bagit::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/',
+        @packager = Bagger::Packager.new(SOURCE_DIR, TARGET_DIR, 'http://test.host/',
                                   :css_packager_options => {
                                    :combined_css_file_path => @combined_css_file
                                   })
@@ -185,7 +185,7 @@ class PackagerTest < Test::Unit::TestCase
                   :url => 'one.css',
                 }
               }
-        Bagit::CssUrlChanger.expects(:process_file_with_map).with(File.join(TARGET_DIR,@combined_css_file), file_info)
+        Bagger::CssUrlChanger.expects(:process_file_with_map).with(File.join(TARGET_DIR,@combined_css_file), file_info)
         @packager.package
       end
       

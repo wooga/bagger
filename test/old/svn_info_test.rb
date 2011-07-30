@@ -1,7 +1,7 @@
 # encoding: UTF-8
 require 'test_helper'
 
-class Bagit::SVNInfoTest < Test::Unit::TestCase
+class Bagger::SVNInfoTest < Test::Unit::TestCase
   FAKE_RESPONSE = <<-eos
   Path: Rakefile
   Name: Rakefile
@@ -20,15 +20,15 @@ class Bagit::SVNInfoTest < Test::Unit::TestCase
 
   context "revision_for_file" do
     should "return the revision info" do
-      Bagit::SVNInfo.stubs(:run_command).returns(FAKE_RESPONSE)
-      assert_equal "1342", Bagit::SVNInfo.revision_for_file(nil)
+      Bagger::SVNInfo.stubs(:run_command).returns(FAKE_RESPONSE)
+      assert_equal "1342", Bagger::SVNInfo.revision_for_file(nil)
     end
   end
 
   context "branch" do
     should "return the last two folders" do
-      Bagit::SVNInfo.stubs(:run_command).returns(FAKE_RESPONSE)
-      assert_equal 'trunk/server', Bagit::SVNInfo.branch
+      Bagger::SVNInfo.stubs(:run_command).returns(FAKE_RESPONSE)
+      assert_equal 'trunk/server', Bagger::SVNInfo.branch
     end
   end
 end

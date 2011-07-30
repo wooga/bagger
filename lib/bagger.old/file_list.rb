@@ -1,5 +1,5 @@
 # encoding: UTF-8
-module Bagit
+module Bagger
   class FileList
     def initialize(source_dir, exclude_pattern = nil)
       @source_dir = source_dir

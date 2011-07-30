@@ -1,7 +1,7 @@
 # encoding: UTF-8
 require 'test_helper'
 
-class Bagit::CSSURLChanger < Test::Unit::TestCase
+class Bagger::CSSURLChanger < Test::Unit::TestCase
   TEST_DIR = ::TEST_TEMP_DIR
   TEST_FILE = File.join(TEST_DIR, "test_file.css") unless defined?(TEST_FILE)
 
@@ -48,7 +48,7 @@ class Bagit::CSSURLChanger < Test::Unit::TestCase
     end
     
     should 'replace the urls with the information in the map' do
-      Bagit::CssUrlChanger.process_file_with_map(TEST_FILE, @map)
+      Bagger::CssUrlChanger.process_file_with_map(TEST_FILE, @map)
       assert file_content.include?("url('http://test.host/style/mainMenu.2340.css');"), "imported css files should include revision numbers"
       assert file_content.include?("url('http://test.host/style/image/tooltip.2480.png');"), "imported css files should include revision numbers"
     end
@@ -61,7 +61,7 @@ class Bagit::CSSURLChanger < Test::Unit::TestCase
         background-image-type: animation;
       }
       EOF
-      Bagit::CssUrlChanger.process_file_with_map(TEST_FILE, @map)
+      Bagger::CssUrlChanger.process_file_with_map(TEST_FILE, @map)
       assert file_content.include?(expected), "css should remain untouched"
     end
 
@@ -69,7 +69,7 @@ class Bagit::CSSURLChanger < Test::Unit::TestCase
       expected = <<-EOF
         background:#fff0 url('attach://ButtonMoveDown') no-repeat 0px 50%;
       EOF
-      Bagit::CssUrlChanger.process_file_with_map(TEST_FILE, @map)
+      Bagger::CssUrlChanger.process_file_with_map(TEST_FILE, @map)
       assert file_content.include?(expected)
     end
   end
@@ -97,13 +97,13 @@ class Bagit::CSSURLChanger < Test::Unit::TestCase
     end
 
     should 'process all css files in a given directory' do
-      Bagit::CssUrlChanger.process_directory_with_map(@basedir, @map)
+      Bagger::CssUrlChanger.process_directory_with_map(@basedir, @map)
       assert_equal "@import url('http://test.host/style/mainMenu.2340.css');\n", File.open(File.join(@basedir,'test1.css')){|f| f.read}
       assert_equal "@import url('http://test.host/style/mainMenu.2340.css');\n", File.open(File.join(@basedir,'test2.css')){|f| f.read}
     end
 
     should "process the css files in subdirectories of a given directory" do
-      Bagit::CssUrlChanger.process_directory_with_map(@basedir, @map)
+      Bagger::CssUrlChanger.process_directory_with_map(@basedir, @map)
       assert_equal "@import url('http://test.host/style/basedir1/mainMenu.2340.css');\n", File.open(File.join(@basedir,'subdir1','testsub1.css')){|f| f.read}
     end
   end
