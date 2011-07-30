@@ -211,7 +211,8 @@ class PackagerTest < Test::Unit::TestCase
                  :source_dir => SOURCE_DIR,
                  :target_dir => TARGET_DIR,
                  :css_packager_options => {
-                   :combined_css_file_path => @combined_css_file
+                   :combined_css_file_path => @combined_css_file,
+                   :stylesheets => ['one.css', 'two.css']
                  }
                 )
       end

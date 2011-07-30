@@ -44,11 +44,12 @@ class Bagger::CssPackagerTest < Test::Unit::TestCase
       write_file(original_content)
       write_file(main_menu_css, File.join(TEST_DIR, 'zones.css'))
       @options = {
-        :base_dir => TEST_DIR
+        :base_dir => TEST_DIR,
+        :stylesheets => ['test_file.css', 'zones.css']
       }
     end
     
-   should 'combine all css files of a directory to one' do
+   should 'combine all css files of a list to one' do
      combined_file = File.join(TEST_TARGET_DIR, 'combined.css')
      packager = Bagger::CssPackager.new(@options.merge(:target_file => combined_file))
      packager.package
@@ -84,7 +85,8 @@ class Bagger::CssPackagerTest < Test::Unit::TestCase
       EOF
       write_file(content)
       @options = {
-        :base_dir => TEST_DIR
+        :base_dir => TEST_DIR,
+        :stylesheets => ['test_file.css']
       }
     end
     
