@@ -11,4 +11,11 @@ namespace :test do
 
     t.verbose = true
   end
+
+  desc 'run test suite with all ruby versions'
+  task :multi_ruby do
+    require 'yaml'
+    rubies = YAML.load_file('.travis.yml')['rvm'].join(',')
+    puts `rvm #{rubies} rake`
+  end
 end
