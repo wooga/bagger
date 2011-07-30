@@ -1,9 +1,9 @@
 # encoding: UTF-8
 module Bagger
   class CssPackager
-    def initialize(source_dir, target_file, options = {})
-      @source_dir = source_dir
-      @target_file = target_file
+    def initialize(options)
+      @source_dir = options[:base_dir]
+      @target_file = options[:target_file]
       @exclude_files = options[:exclude_files] || nil
     end
     

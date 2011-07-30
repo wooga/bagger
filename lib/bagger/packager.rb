@@ -90,10 +90,11 @@ module Bagger
     end
     
     def package_css
-      Bagger::CssPackager.new(@target_dir, 
-                                    File.join(@target_dir,combined_css_file_path),
-                                    @css_packager_options
-                                   ).package   
+      options = {
+                  :base_dir => @target_dir,
+                  :target_file =>  File.join(@target_dir,combined_css_file_path)
+                }.merge(@css_packager_options)
+      Bagger::CssPackager.new(options).package
     end
     
     def process_combined_css

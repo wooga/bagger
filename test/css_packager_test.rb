@@ -43,11 +43,14 @@ class Bagger::CssPackagerTest < Test::Unit::TestCase
       EOF
       write_file(original_content)
       write_file(main_menu_css, File.join(TEST_DIR, 'zones.css'))
+      @options = {
+        :base_dir => TEST_DIR
+      }
     end
     
    should 'combine all css files of a directory to one' do
      combined_file = File.join(TEST_TARGET_DIR, 'combined.css')
-     packager = Bagger::CssPackager.new(TEST_DIR, combined_file)
+     packager = Bagger::CssPackager.new(@options.merge(:target_file => combined_file))
      packager.package
      combined_content = file_content(combined_file)
      assert combined_content.include?(file_content(File.join(TEST_DIR,'zones.css')))
@@ -56,7 +59,7 @@ class Bagger::CssPackagerTest < Test::Unit::TestCase
    
    should 'include all the files even if the target name collides with an existing file' do
      combined_file = File.join(TEST_TARGET_DIR, 'zones.css')
-     packager = Bagger::CssPackager.new(TEST_DIR, combined_file)
+     packager = Bagger::CssPackager.new(@options.merge(:target_file => combined_file))
      packager.package
      combined_content = file_content(combined_file)
      assert combined_content.include?(file_content(File.join(TEST_DIR,'zones.css')))
@@ -66,7 +69,7 @@ class Bagger::CssPackagerTest < Test::Unit::TestCase
    should 'allow files to be excluded' do
      write_file('p { color: black;}', File.join(TEST_DIR, 'exclude_me.css'))
      combined_file = File.join(TEST_TARGET_DIR, 'combined.css')
-     packager = Bagger::CssPackager.new(TEST_DIR, combined_file, :exclude_files => "exclude_me.css")
+     packager = Bagger::CssPackager.new(@options.merge(:target_file => combined_file, :exclude_files => "exclude_me.css"))
      packager.package
      assert !file_content(combined_file).include?(file_content(File.join(TEST_DIR, 'exclude_me.css')))
    end
@@ -80,11 +83,14 @@ class Bagger::CssPackagerTest < Test::Unit::TestCase
         @define defaultLayer #ffff;
       EOF
       write_file(content)
+      @options = {
+        :base_dir => TEST_DIR
+      }
     end
     
     should 'strip out @import statements containing paths' do
       combined_file = File.join(TEST_TARGET_DIR, 'combined.css')
-      packager = Bagger::CssPackager.new(TEST_DIR, combined_file)
+      packager = Bagger::CssPackager.new(@options.merge(:target_file => combined_file))
       packager.package
       combined_content = file_content(combined_file)
       assert !combined_content.include?("@import url('zones.css')")
@@ -92,7 +98,7 @@ class Bagger::CssPackagerTest < Test::Unit::TestCase
     
     should 'not strip out @import statements containing URLs' do
       combined_file = File.join(TEST_TARGET_DIR, 'combined.css')
-      packager = Bagger::CssPackager.new(TEST_DIR, combined_file)
+      packager = Bagger::CssPackager.new(@options.merge(:target_file => combined_file))
       packager.package
       combined_content = file_content(combined_file)
       assert combined_content.include?("@import url('http://test.host/style/zones.css')")      
@@ -100,7 +106,7 @@ class Bagger::CssPackagerTest < Test::Unit::TestCase
     
     should 'not strip out @define directives' do
       combined_file = File.join(TEST_TARGET_DIR, 'combined.css')
-      packager = Bagger::CssPackager.new(TEST_DIR, combined_file)
+      packager = Bagger::CssPackager.new(@options.merge(:target_file => combined_file))
       packager.package
       combined_content = file_content(combined_file)
       assert combined_content.include?("@define defaultLayer #ffff;")
