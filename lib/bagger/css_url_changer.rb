@@ -1,5 +1,5 @@
 # encoding: UTF-8
-module Bagit
+module Bagger
   class CssUrlChanger
     def self.process_file_with_map(file, map = {})
       base_dir = File.dirname(file)

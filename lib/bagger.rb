@@ -9,6 +9,6 @@ require "bagger/ftp_sync"
 require "bagger/packager"
 require "bagger/version"
 
-module Bagit
+module Bagger
   # Your code goes here...
 end

@@ -1,12 +1,12 @@
 # encoding: UTF-8
-module Bagit
+module Bagger
   class Packager
     def initialize(source_dir, target_dir, asset_base_url,options = {:exclude_pattern => nil, :css_packager_options => {}})
       @source_dir = source_dir
       @target_dir = target_dir
       @asset_base_url = asset_base_url
       @exclude_pattern = options[:exclude_pattern]
-      @assets = Bagit::FileList.new(@source_dir, @exclude_pattern)
+      @assets = Bagger::FileList.new(@source_dir, @exclude_pattern)
       @css_packager_options = options[:css_packager_options]
       @revision_suffix = options[:revision_suffix] || ''
       FileUtils.mkdir_p(@target_dir)
@@ -91,7 +91,7 @@ module Bagit
     end
     
     def package_css
-      Bagit::CssPackager.new(@target_dir, 
+      Bagger::CssPackager.new(@target_dir, 
                                     File.join(@target_dir,combined_css_file_path),
                                     @css_packager_options
                                    ).package   

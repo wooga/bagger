@@ -4,7 +4,7 @@ require "bagger/version"
 
 Gem::Specification.new do |s|
   s.name        = "bagger"
-  s.version     = Bagit::VERSION
+  s.version     = Bagger::VERSION
   s.authors     = ["Patrick Huesler"]
   s.email       = ["patrick.huesler@gmail.com"]
   s.homepage    = ""

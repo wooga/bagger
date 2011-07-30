@@ -1,6 +1,6 @@
 # encoding: UTF-8
 require 'yaml'
-module Bagit
+module Bagger
   class SVNInfo
     @@silence_warnings = false
     class << self
