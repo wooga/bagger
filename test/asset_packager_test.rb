@@ -21,8 +21,7 @@ class PackagerTest < Test::Unit::TestCase
     should 'generate a json file' do
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
-                 :target_dir => TARGET_DIR,
-                 :target_host => 'http://test.host/'
+                 :target_dir => TARGET_DIR
                 )
       packager.generate_file_list
       assert File.exists?(File.join(TARGET_DIR,"file_info.json")), "file could not be found"
@@ -35,7 +34,6 @@ class PackagerTest < Test::Unit::TestCase
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
                  :target_dir => TARGET_DIR,
-                 :target_host => 'http://test.host/'
                 )
       packager.generate_file_list
       json = JSON.parse(File.open(File.join(TARGET_DIR, 'file_info.json')).readlines.join)
@@ -49,7 +47,6 @@ class PackagerTest < Test::Unit::TestCase
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
                  :target_dir => TARGET_DIR,
-                 :target_host => 'http://test.host/'
                 )
       packager.generate_file_list
       list = JSON.parse(File.open(File.join(TARGET_DIR, 'file_info.json')).readlines.join)
@@ -64,7 +61,6 @@ class PackagerTest < Test::Unit::TestCase
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
                  :target_dir => TARGET_DIR,
-                 :target_host => 'http://test.host/'
                 )
       packager.generate_file_list
       list = JSON.parse(File.open(File.join(TARGET_DIR, 'file_info.json')).readlines.join)
@@ -80,7 +76,6 @@ class PackagerTest < Test::Unit::TestCase
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
                  :target_dir => TARGET_DIR,
-                 :target_host => 'http://test.host/'
                 )
       packager.generate_file_list
       list = JSON.parse(File.open(File.join(TARGET_DIR, 'file_info.json')).readlines.join)
@@ -95,7 +90,6 @@ class PackagerTest < Test::Unit::TestCase
       Bagger::Packager.new(
            :source_dir => SOURCE_DIR,
            :target_dir => inexistent_target_dir,
-           :target_host => 'http://test.host/'
           ).package
 
       assert File.exists?(inexistent_target_dir), 'target directory should be created'
@@ -108,7 +102,6 @@ class PackagerTest < Test::Unit::TestCase
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
                  :target_dir => TARGET_DIR,
-                 :target_host => 'http://test.host/'
                 )
       packager.package
       assert File.exists?(File.join(TARGET_DIR, "bar.png")), "File does not exist"
@@ -123,7 +116,6 @@ class PackagerTest < Test::Unit::TestCase
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
                  :target_dir => TARGET_DIR,
-                 :target_host => 'http://test.host/'
                 )
       packager.package      
       assert File.exists?(File.join(TARGET_DIR, "testdir1/subtestdir2/bar.png")), "File does not exist"
@@ -137,7 +129,6 @@ class PackagerTest < Test::Unit::TestCase
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
                  :target_dir => TARGET_DIR,
-                 :target_host => 'http://test.host/'
                 )
       packager.package
       assert File.exists?(File.join(TARGET_DIR, "bar.1956.png")), "File does not exist"
@@ -151,7 +142,6 @@ class PackagerTest < Test::Unit::TestCase
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
                  :target_dir => TARGET_DIR,
-                 :target_host => 'http://test.host/',
                  :revision_suffix => 'A'
                 )
       packager.package
@@ -166,7 +156,6 @@ class PackagerTest < Test::Unit::TestCase
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
                  :target_dir => TARGET_DIR,
-                 :target_host => 'http://test.host/'
                 )
       packager.package
       assert File.exists?(File.join(TARGET_DIR, "some_file_without_extension.1956")), "File does not exist"
@@ -179,7 +168,6 @@ class PackagerTest < Test::Unit::TestCase
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
                  :target_dir => TARGET_DIR,
-                 :target_host => 'http://test.host/',
                  :exclude_pattern => "\.txt"
                 )
       packager.package
@@ -190,7 +178,6 @@ class PackagerTest < Test::Unit::TestCase
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
                  :target_dir => TARGET_DIR,
-                 :target_host => 'http://test.host/'
                 )
       packager.package
       assert File.exists?(File.join(SOURCE_DIR,"file_info.json")), "file could not be found"
@@ -205,7 +192,6 @@ class PackagerTest < Test::Unit::TestCase
       packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
                  :target_dir => TARGET_DIR,
-                 :target_host => 'http://test.host/'
                 )
       packager.package
       file_info = JSON.parse(File.read(File.join(SOURCE_DIR,"file_info.json")))
@@ -224,7 +210,6 @@ class PackagerTest < Test::Unit::TestCase
         @packager = Bagger::Packager.new(
                  :source_dir => SOURCE_DIR,
                  :target_dir => TARGET_DIR,
-                 :target_host => 'http://test.host/',
                  :css_packager_options => {
                    :combined_css_file_path => @combined_css_file
                  }
