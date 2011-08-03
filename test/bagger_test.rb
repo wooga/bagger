@@ -68,6 +68,15 @@ class BaggerTest < Test::Unit::TestCase
       )
       assert !File.exists?(File.join(@target_dir, 'css', 'one.css'))
     end
+
+    should 'only copy over the generate file' do
+      Bagger.bagit!(
+        :source_dir => @source_dir,
+        :target_dir => @target_dir,
+        :combine => @config
+      )
+      assert !File.exists?(File.join(@target_dir, 'css', 'one.css'))
+    end
 end
 
   context 'combine javascript' do
@@ -107,5 +116,4 @@ end
       assert !File.exists?(File.join(@target_dir, 'js', 'one.js'))
     end
   end
-
 end

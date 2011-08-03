@@ -2,7 +2,6 @@
 require 'json'
 require 'digest/md5'
 
-
 module Bagger
   class Packager
 
