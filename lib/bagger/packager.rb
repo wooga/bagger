@@ -14,6 +14,22 @@ module Bagger
       @target_dir = @options[:target_dir]
       @stylesheet_path = (@options[:combine] || {})[:stylesheet_path] || 'combined.css'
       @javascript_path = (@options[:combine] || {})[:javascript_path] || 'combined.js'
+      @manifest = {}
+    end
+
+    def to_manifest(path)
+      content = File.open(File.join(@target_dir, path)) { |f| f.read }
+      extension = File.extname(path)
+      basename = File.basename(path, extension)
+      dirname = File.dirname(path)
+      FileUtils.mkdir_p(File.join(@target_dir, dirname))
+      md5 = Digest::MD5.hexdigest(content)
+      new_file_name = "#{basename}.#{md5}#{extension}"
+      new_file_path = File.join(@target_dir, dirname, new_file_name)
+      File.open(new_file_path, 'w') { |f| f.write content }
+      manifest_key_path = File.expand_path("/#{dirname}/#{basename}#{extension}")
+      effective_path = File.expand_path("/" + File.join(dirname, new_file_name))
+      @manifest[manifest_key_path] = effective_path
     end
 
     def manifest_path
@@ -21,12 +37,17 @@ module Bagger
     end
 
     def run
-      target_path =
-      File.open(manifest_path, 'w') do |f|
-        f.puts 'jah a'
-      end
       combine_css
       combine_js
+      to_manifest(@stylesheet_path)
+      to_manifest(@javascript_path)
+      write_manifest
+    end
+
+    def write_manifest
+      File.open(manifest_path, 'w') do |f|
+        f.write JSON.pretty_generate(@manifest)
+      end
     end
 
     def combine_css

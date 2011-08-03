@@ -50,6 +50,18 @@ class BaggerTest < Test::Unit::TestCase
       end
     end
 
+    should 'add it to the manifest' do
+      Bagger.bagit!(
+        :source_dir => @source_dir,
+        :target_dir => @target_dir,
+        :combine => @config
+      )
+      path = File.join(@source_dir, 'manifest.json')
+      json = File.open(path){|f| f.read}
+      manifest = JSON.parse(json)
+      assert manifest['/css/combined.css']
+    end
+
     should 'combine it' do
       Bagger.bagit!(
         :source_dir => @source_dir,
@@ -96,6 +108,17 @@ end
       end
     end
 
+    should 'add it to the manifest' do
+      Bagger.bagit!(
+        :source_dir => @source_dir,
+        :target_dir => @target_dir,
+        :combine => @config
+      )
+      path = File.join(@source_dir, 'manifest.json')
+      json = File.open(path){|f| f.read}
+      manifest = JSON.parse(json)
+      assert manifest['/js/combined.js']
+    end
 
     should 'combine it' do
       Bagger.bagit!(
