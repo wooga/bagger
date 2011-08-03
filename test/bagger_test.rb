@@ -84,7 +84,7 @@ class BaggerTest < Test::Unit::TestCase
       )
       assert !File.exists?(File.join(@target_dir, 'css', 'one.css'))
     end
-end
+  end
 
   context 'combine javascript' do
     setup do
