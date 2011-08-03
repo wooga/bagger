@@ -17,7 +17,7 @@ module Bagger
       @manifest = {}
     end
 
-    def to_manifest(path)
+    def to_manifest(path, keep_original = true)
       content = File.open(File.join(@target_dir, path)) { |f| f.read }
       extension = File.extname(path)
       basename = File.basename(path, extension)
@@ -27,6 +27,7 @@ module Bagger
       new_file_name = "#{basename}.#{md5}#{extension}"
       new_file_path = File.join(@target_dir, dirname, new_file_name)
       File.open(new_file_path, 'w') { |f| f.write content }
+      FileUtils.rm(File.join(@target_dir, path)) unless keep_original
       manifest_key_path = File.expand_path("/#{dirname}/#{basename}#{extension}")
       effective_path = File.expand_path("/" + File.join(dirname, new_file_name))
       @manifest[manifest_key_path] = effective_path
@@ -39,8 +40,8 @@ module Bagger
     def run
       combine_css
       combine_js
-      to_manifest(@stylesheet_path)
-      to_manifest(@javascript_path)
+      to_manifest(@stylesheet_path, false)
+      to_manifest(@javascript_path, false)
       write_manifest
     end
 

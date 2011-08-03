@@ -26,6 +26,12 @@ class BaggerTest < Test::Unit::TestCase
     }
   end
 
+  def manifest
+    path = File.join(@source_dir, 'manifest.json')
+    json = File.open(path){|f| f.read}
+    JSON.parse(json) 
+  end
+
   context 'manifest' do
     should 'generate one' do
       Bagger.bagit!(default_options)
@@ -56,9 +62,7 @@ class BaggerTest < Test::Unit::TestCase
         :target_dir => @target_dir,
         :combine => @config
       )
-      path = File.join(@source_dir, 'manifest.json')
-      json = File.open(path){|f| f.read}
-      manifest = JSON.parse(json)
+
       assert manifest['/css/combined.css']
     end
 
@@ -68,20 +72,11 @@ class BaggerTest < Test::Unit::TestCase
         :target_dir => @target_dir,
         :combine => @config
       )
-      expected_file_path = File.join(@target_dir, 'css', 'combined.css')
+      expected_file_path = File.join(@target_dir, manifest['/css/combined.css'])
       assert File.exists?(expected_file_path), 'combined css not found'
     end
 
     should 'only copy over the generate files' do
-      Bagger.bagit!(
-        :source_dir => @source_dir,
-        :target_dir => @target_dir,
-        :combine => @config
-      )
-      assert !File.exists?(File.join(@target_dir, 'css', 'one.css'))
-    end
-
-    should 'only copy over the generate file' do
       Bagger.bagit!(
         :source_dir => @source_dir,
         :target_dir => @target_dir,
@@ -114,9 +109,6 @@ end
         :target_dir => @target_dir,
         :combine => @config
       )
-      path = File.join(@source_dir, 'manifest.json')
-      json = File.open(path){|f| f.read}
-      manifest = JSON.parse(json)
       assert manifest['/js/combined.js']
     end
 
@@ -126,7 +118,7 @@ end
         :target_dir => @target_dir,
         :combine => @config
       )
-      expected_file_path = File.join(@target_dir, 'js', 'combined.js')
+      expected_file_path = File.join(@target_dir, manifest['/js/combined.js'])
       assert File.exists?(expected_file_path), 'combined js not found'
     end
 
