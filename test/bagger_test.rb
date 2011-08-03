@@ -37,6 +37,21 @@ class BaggerTest < Test::Unit::TestCase
       Bagger.bagit!(default_options)
       assert File.exists?(File.join(@source_dir, 'manifest.json')), 'manifest was not created'
     end
+
+    should 'version files with md5' do
+      test_content = 'testcontent'
+      write_file(File.join(@source_dir, 'test.txt'), test_content)
+      Bagger.bagit!(default_options)
+      md5 = Digest::MD5.hexdigest(test_content)
+      assert_equal md5, manifest['/test.txt'].split('.')[1]
+    end
+
+    should 'copy over the versioned files' do
+      test_content = 'testcontent'
+      write_file(File.join(@source_dir, 'test.txt'), test_content)
+      Bagger.bagit!(default_options)
+      assert File.exists?(File.join(@target_dir, manifest['/test.txt']))
+    end
   end
 
   context 'combine css files' do

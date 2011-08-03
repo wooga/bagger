@@ -40,6 +40,7 @@ module Bagger
     def run
       combine_css
       combine_js
+      version_files
       to_manifest(@stylesheet_path, false)
       to_manifest(@javascript_path, false)
       write_manifest
@@ -48,6 +49,16 @@ module Bagger
     def write_manifest
       File.open(manifest_path, 'w') do |f|
         f.write JSON.pretty_generate(@manifest)
+      end
+    end
+
+    def version_files
+      FileUtils.cd(@source_dir) do
+        Dir["**/*"].reject{ |f| f =~ /\.(css|js)$/ }.each do |path|
+          next if File.directory? path
+          FileUtils.cp(path, File.join(@target_dir, path))
+          to_manifest(path, false)
+        end
       end
     end
 
