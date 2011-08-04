@@ -6,6 +6,7 @@ class BaggerTest < Test::Unit::TestCase
   def setup
     @source_dir = Dir.mktmpdir
     @target_dir = Dir.mktmpdir
+    Uglifier.stubs(:compile).returns('//minfied js');
   end
 
   def teardown
