@@ -81,7 +81,7 @@ module Bagger
       if behavior_regex.match(pre) || data_regex.match(url_match)
         full_match
       else
-        path = Addressable::URI.parse("/css") + url_match
+        path = Addressable::URI.parse("/") + url_match
         target_url = @manifest[path.to_s]
         if target_url
           pre + target_url + post

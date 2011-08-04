@@ -104,19 +104,21 @@ class BaggerTest < Test::Unit::TestCase
       setup do
         css = <<-EOF
         #documentRootBasedUrl {
-            background: url("/images/image.png") top center;
+            background: url("/images/root.png") top center;
         }
         #relativeUrl {
-            background: url("../images/image.png") top center;
+            background: url("../images/relative.png") top center;
         }
         #absoluteUrl {
-            background: url('http://localhost/images.image.png') top center;
+            background: url('http://localhost/absolute.png') top center;
         }
         EOF
         write_file(File.join(@css_dir, "urled.css"), css)
         @config[:stylesheets] << 'css/urled.css'
         FileUtils.mkdir_p(File.join(@source_dir, 'images'))
-        FileUtils.touch(File.join(@source_dir, 'images', 'image.png'))
+        %w(root relative absolute).each do |type|
+          FileUtils.touch(File.join(@source_dir, 'images', "#{type}.png"))
+        end
       end
 
       should 'rewrite document root based urls' do
@@ -126,15 +128,27 @@ class BaggerTest < Test::Unit::TestCase
           :combine => @config
         )
         combined_css = File.open(File.join(@target_dir, manifest['/css/combined.css'])){|f| f.read}
-        assert combined_css.include?(manifest['/images/image.png'])
+        assert combined_css.include?(manifest['/images/root.png'])
       end
 
-      should 'rewrite relative (anchored by the css file) urls' do
-
+      should 'rewrite relative (anchored by the css file) urls to absolute paths' do
+        Bagger.bagit!(
+          :source_dir => @source_dir,
+          :target_dir => @target_dir,
+          :combine => @config
+        )
+        combined_css = File.open(File.join(@target_dir, manifest['/css/combined.css'])){|f| f.read}
+        assert combined_css.include?(manifest['/images/relative.png'])
       end
 
       should 'not rewrite absolute urls' do
-
+        Bagger.bagit!(
+          :source_dir => @source_dir,
+          :target_dir => @target_dir,
+          :combine => @config
+        )
+        combined_css = File.open(File.join(@target_dir, manifest['/css/combined.css'])){|f| f.read}
+        assert combined_css.include?('http://localhost/absolute.png')
       end
     end
   end
