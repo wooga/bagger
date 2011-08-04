@@ -2,6 +2,7 @@
 require 'json'
 require 'digest/md5'
 require 'addressable/uri'
+require 'uglifier'
 
 module Bagger
   class Packager
@@ -45,6 +46,7 @@ module Bagger
       version_files
       rewrite_urls_in_css
       to_manifest(@stylesheet_path, false)
+      compress_js
       to_manifest(@javascript_path, false)
       write_manifest
     end
@@ -97,6 +99,11 @@ module Bagger
 
     def combine_js
       combine_files(@javascripts, @javascript_path)
+    end
+
+    def compress_js
+      compressed = Uglifier.compile(File.read(File.join(@target_dir, @javascript_path)))
+      File.write(File.join(@target_dir, @javascript_path), compressed)
     end
 
     private
