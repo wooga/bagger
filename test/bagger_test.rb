@@ -58,7 +58,7 @@ class BaggerTest < Test::Unit::TestCase
       test_content = 'testcontent'
       write_file(File.join(@source_dir, 'test.txt'), test_content)
       Bagger.bagit!(default_options.merge(:path_prefix => '/path_prefix'))
-      assert_match manifest['/test.txt'], /\/path_prefix\/test\..*\.txt/
+      assert_match /\/path_prefix\/test\..*\.txt/, manifest['/test.txt']
     end
   end
 
@@ -168,7 +168,7 @@ class BaggerTest < Test::Unit::TestCase
         )
         combined_css_path = manifest['/css/combined.css'].gsub(/path_prefix/,'')
         combined_css = File.open(File.join(@target_dir, combined_css_path)){|f| f.read}
-        assert_match combined_css, /\/path_prefix\/images\/relative\..*\.png/
+        assert_match /\/path_prefix\/images\/relative\..*\.png/, combined_css
       end
     end
   end
