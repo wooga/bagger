@@ -102,8 +102,9 @@ module Bagger
     end
 
     def compress_js
-      compressed = Uglifier.compile(File.read(File.join(@target_dir, @javascript_path)))
-      File.write(File.join(@target_dir, @javascript_path), compressed)
+      javascript = File.open(File.join(@target_dir, @javascript_path)){|f| f.read}
+      compressed = Uglifier.compile(javascript)
+      File.open(File.join(@target_dir, @javascript_path), 'w'){|f| f.write compressed}
     end
 
     private

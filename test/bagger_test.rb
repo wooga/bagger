@@ -217,5 +217,18 @@ class BaggerTest < Test::Unit::TestCase
       )
       assert !File.exists?(File.join(@target_dir, 'js', 'one.js'))
     end
+
+    should 'compress the javascript' do
+      expected_path = File.join(@target_dir, 'js', 'combined.js')
+      Uglifier.expects(:compile).returns('//minified javascript')
+
+      Bagger.bagit!(
+        :source_dir => @source_dir,
+        :target_dir => @target_dir,
+        :combine => @config
+      )
+      expected_file_path = File.join(@target_dir, manifest['/js/combined.js'])
+      assert_equal '//minified javascript', File.open(expected_file_path){|f| f.read}
+    end
   end
 end
