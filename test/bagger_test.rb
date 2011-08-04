@@ -100,25 +100,42 @@ class BaggerTest < Test::Unit::TestCase
       assert !File.exists?(File.join(@target_dir, 'css', 'one.css'))
     end
 
-    should 'rewrite the urls' do
-      css = <<-EOF
-      #shop {
-          position: absolute;
-          top: 0px; right: 0; bottom: 0px; left: 0;
-          background: url("/images/image.png") top center;
-      EOF
-      write_file(File.join(@css_dir, "urled.css"), css)
-      @config[:stylesheets] << 'css/urled.css'
-      FileUtils.mkdir_p(File.join(@source_dir, 'images'))
-      FileUtils.touch(File.join(@source_dir, 'images', 'image.png'))
+    context 'url rewriting' do
+      setup do
+        css = <<-EOF
+        #documentRootBasedUrl {
+            background: url("/images/image.png") top center;
+        }
+        #relativeUrl {
+            background: url("../images/image.png") top center;
+        }
+        #absoluteUrl {
+            background: url('http://localhost/images.image.png') top center;
+        }
+        EOF
+        write_file(File.join(@css_dir, "urled.css"), css)
+        @config[:stylesheets] << 'css/urled.css'
+        FileUtils.mkdir_p(File.join(@source_dir, 'images'))
+        FileUtils.touch(File.join(@source_dir, 'images', 'image.png'))
+      end
 
-      Bagger.bagit!(
-        :source_dir => @source_dir,
-        :target_dir => @target_dir,
-        :combine => @config
-      )
-      combined_css = File.open(File.join(@target_dir, manifest['/css/combined.css'])){|f| f.read}
-      assert combined_css.include?(manifest['/images/image.png'])
+      should 'rewrite document root based urls' do
+        Bagger.bagit!(
+          :source_dir => @source_dir,
+          :target_dir => @target_dir,
+          :combine => @config
+        )
+        combined_css = File.open(File.join(@target_dir, manifest['/css/combined.css'])){|f| f.read}
+        assert combined_css.include?(manifest['/images/image.png'])
+      end
+
+      should 'rewrite relative (anchored by the css file) urls' do
+
+      end
+
+      should 'not rewrite absolute urls' do
+
+      end
     end
   end
 
