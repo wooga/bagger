@@ -52,11 +52,18 @@ class BaggerTest < Test::Unit::TestCase
       Bagger.bagit!(default_options)
       assert File.exists?(File.join(@target_dir, manifest['/test.txt']))
     end
+
+    should 'support a path prefix' do
+      test_content = 'testcontent'
+      write_file(File.join(@source_dir, 'test.txt'), test_content)
+      Bagger.bagit!(default_options.merge(:path_prefix => '/path_prefix'))
+      assert_match manifest['/test.txt'], /\/path_prefix\/test\..*\.txt/
+    end
   end
 
   context 'css files' do
     setup do
-      @config = { 
+      @config = {
         :stylesheets => [],
         :stylesheet_path => 'css/combined.css'
       }
@@ -149,6 +156,18 @@ class BaggerTest < Test::Unit::TestCase
         )
         combined_css = File.open(File.join(@target_dir, manifest['/css/combined.css'])){|f| f.read}
         assert combined_css.include?('http://localhost/absolute.png')
+      end
+
+      should 'support a path prefix' do
+        Bagger.bagit!(
+          :source_dir => @source_dir,
+          :target_dir => @target_dir,
+          :path_prefix => '/path_prefix',
+          :combine => @config
+        )
+        combined_css_path = manifest['/css/combined.css'].gsub(/path_prefix/,'')
+        combined_css = File.open(File.join(@target_dir, combined_css_path)){|f| f.read}
+        assert_match combined_css, /\/path_prefix\/images\/relative\..*\.png/
       end
     end
   end

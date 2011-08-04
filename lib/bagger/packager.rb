@@ -15,6 +15,7 @@ module Bagger
       @target_dir = @options[:target_dir]
       @stylesheet_path = (@options[:combine] || {})[:stylesheet_path] || 'combined.css'
       @javascript_path = (@options[:combine] || {})[:javascript_path] || 'combined.js'
+      @path_prefix = @options[:path_prefix] || ''
       @manifest = {}
     end
 
@@ -30,7 +31,7 @@ module Bagger
       File.open(new_file_path, 'w') { |f| f.write content }
       FileUtils.rm(File.join(@target_dir, path)) unless keep_original
       manifest_key_path = File.expand_path("/#{dirname}/#{basename}#{extension}")
-      effective_path = File.expand_path("/" + File.join(dirname, new_file_name))
+      effective_path = File.expand_path(@path_prefix + "/" + File.join(dirname, new_file_name))
       @manifest[manifest_key_path] = effective_path
     end
 
@@ -72,26 +73,26 @@ module Bagger
     end
 
     def rewrite_urls_in_css
-    url_regex = /(^|[{;])(.*?url\(\s*['"]?)(.*?)(['"]?\s*\).*?)([;}]|$)/ui
-    behavior_regex = /behavior:\s*url/ui
-    data_regex = /^\s*data:/ui
-    input = File.open(File.join(@target_dir, @stylesheet_path)){|f| f.read}
-    output = input.gsub(url_regex) do |full_match|
-      pre, url_match, post = ($1 + $2), $3, ($4 + $5)
-      if behavior_regex.match(pre) || data_regex.match(url_match)
-        full_match
-      else
-        path = Addressable::URI.parse("/") + url_match
-        target_url = @manifest[path.to_s]
-        if target_url
-          pre + target_url + post
-        else
+      url_regex = /(^|[{;])(.*?url\(\s*['"]?)(.*?)(['"]?\s*\).*?)([;}]|$)/ui
+      behavior_regex = /behavior:\s*url/ui
+      data_regex = /^\s*data:/ui
+      input = File.open(File.join(@target_dir, @stylesheet_path)){|f| f.read}
+      output = input.gsub(url_regex) do |full_match|
+        pre, url_match, post = ($1 + $2), $3, ($4 + $5)
+        if behavior_regex.match(pre) || data_regex.match(url_match)
           full_match
+        else
+          path = Addressable::URI.parse("/") + url_match
+          target_url = @manifest[path.to_s]
+          if target_url
+            pre + target_url + post
+          else
+            full_match
+          end
         end
       end
-    end
-    path = File.join(@target_dir, @stylesheet_path)
-    File.open(path, "w+") { |f| f.write output }
+      path = File.join(@target_dir, @stylesheet_path)
+      File.open(path, "w+") { |f| f.write output }
     end
 
     def combine_js
