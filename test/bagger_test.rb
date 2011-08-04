@@ -108,6 +108,18 @@ class BaggerTest < Test::Unit::TestCase
       assert !File.exists?(File.join(@target_dir, 'css', 'one.css'))
     end
 
+    should 'compress it' do
+      Rainpress.stubs(:compress).returns('//super minified css');
+      Bagger.bagit!(
+        :source_dir => @source_dir,
+        :target_dir => @target_dir,
+        :combine => @config
+      )
+      expected_file_path = File.join(@target_dir, manifest['/css/combined.css'])
+      compressed_content = File.open(expected_file_path){|f| f.read}
+      assert_equal '//super minified css', compressed_content , 'combined css not found'
+    end
+
     context 'url rewriting' do
       setup do
         css = <<-EOF

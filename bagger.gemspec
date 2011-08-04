@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.add_dependency "json"
   s.add_dependency "addressable"
   s.add_dependency "uglifier"
+  s.add_dependency "rainpress"
 
   s.add_development_dependency "rake"
   s.add_development_dependency "shoulda-context"

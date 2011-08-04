@@ -3,6 +3,7 @@ require 'json'
 require 'digest/md5'
 require 'addressable/uri'
 require 'uglifier'
+require 'rainpress'
 
 module Bagger
   class Packager
@@ -45,6 +46,7 @@ module Bagger
       combine_js
       version_files
       rewrite_urls_in_css
+      compress_css
       to_manifest(@stylesheet_path, false)
       compress_js
       to_manifest(@javascript_path, false)
@@ -95,6 +97,12 @@ module Bagger
       end
       path = File.join(@target_dir, @stylesheet_path)
       File.open(path, "w+") { |f| f.write output }
+    end
+
+    def compress_css
+      css = File.open(File.join(@target_dir, @stylesheet_path)){|f| f.read}
+      compressed = Rainpress.compress(css)
+      File.open(File.join(@target_dir, @stylesheet_path), 'w'){|f| f.write compressed}
     end
 
     def combine_js
