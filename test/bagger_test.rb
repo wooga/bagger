@@ -54,7 +54,7 @@ class BaggerTest < Test::Unit::TestCase
     end
   end
 
-  context 'combine css files' do
+  context 'css files' do
     setup do
       @config = { 
         :stylesheets => [],
@@ -99,11 +99,32 @@ class BaggerTest < Test::Unit::TestCase
       )
       assert !File.exists?(File.join(@target_dir, 'css', 'one.css'))
     end
+
+    should 'rewrite the urls' do
+      css = <<-EOF
+      #shop {
+          position: absolute;
+          top: 0px; right: 0; bottom: 0px; left: 0;
+          background: url("/images/image.png") top center;
+      EOF
+      write_file(File.join(@css_dir, "urled.css"), css)
+      @config[:stylesheets] << 'css/urled.css'
+      FileUtils.mkdir_p(File.join(@source_dir, 'images'))
+      FileUtils.touch(File.join(@source_dir, 'images', 'image.png'))
+
+      Bagger.bagit!(
+        :source_dir => @source_dir,
+        :target_dir => @target_dir,
+        :combine => @config
+      )
+      combined_css = File.open(File.join(@target_dir, manifest['/css/combined.css'])){|f| f.read}
+      assert combined_css.include?(manifest['/images/image.png'])
+    end
   end
 
   context 'combine javascript' do
     setup do
-      @config = { 
+      @config = {
         :javascripts => [],
         :javascript_path => 'js/combined.js'
       }

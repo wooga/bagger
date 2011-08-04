@@ -1,6 +1,7 @@
 # encoding: UTF-8
 require 'json'
 require 'digest/md5'
+require 'addressable/uri'
 
 module Bagger
   class Packager
@@ -41,6 +42,7 @@ module Bagger
       combine_css
       combine_js
       version_files
+      rewrite_urls_in_css
       to_manifest(@stylesheet_path, false)
       to_manifest(@javascript_path, false)
       write_manifest
@@ -55,7 +57,10 @@ module Bagger
     def version_files
       FileUtils.cd(@source_dir) do
         Dir["**/*"].reject{ |f| f =~ /\.(css|js)$/ }.each do |path|
-          next if File.directory? path
+          if File.directory? path
+            FileUtils.mkdir_p(File.join(@target_dir, path))
+            next
+          end
           FileUtils.cp(path, File.join(@target_dir, path))
           to_manifest(path, false)
         end
@@ -64,6 +69,29 @@ module Bagger
 
     def combine_css
       combine_files(@stylesheets, @stylesheet_path)
+    end
+
+    def rewrite_urls_in_css
+    url_regex = /(^|[{;])(.*?url\(\s*['"]?)(.*?)(['"]?\s*\).*?)([;}]|$)/ui
+    behavior_regex = /behavior:\s*url/ui
+    data_regex = /^\s*data:/ui
+    input = File.open(File.join(@target_dir, @stylesheet_path)){|f| f.read}
+    output = input.gsub(url_regex) do |full_match|
+      pre, url_match, post = ($1 + $2), $3, ($4 + $5)
+      if behavior_regex.match(pre) || data_regex.match(url_match)
+        full_match
+      else
+        path = Addressable::URI.parse("/css") + url_match
+        target_url = @manifest[path.to_s]
+        if target_url
+          pre + target_url + post
+        else
+          full_match
+        end
+      end
+    end
+    path = File.join(@target_dir, @stylesheet_path)
+    File.open(path, "w+") { |f| f.write output }
     end
 
     def combine_js
