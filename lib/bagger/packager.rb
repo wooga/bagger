@@ -1,121 +1,134 @@
 # encoding: UTF-8
+require 'json'
+require 'digest/md5'
+require 'addressable/uri'
+require 'uglifier'
+require 'rainpress'
+
 module Bagger
   class Packager
-    def initialize(options = {:exclude_pattern => nil, :css_packager_options => {}})
-      @source_dir = options[:source_dir]
-      @target_dir = options[:target_dir]
-      @exclude_pattern = options[:exclude_pattern]
-      @assets = Bagger::FileList.new(@source_dir, @exclude_pattern)
-      @css_packager_options = options[:css_packager_options]
-      @revision_suffix = options[:revision_suffix] || ''
-      FileUtils.mkdir_p(@target_dir)
+
+    def initialize(options)
+      @options = options
+      @manifest_name = 'manifest.json'
+      @stylesheets = (@options[:combine] || {})[:stylesheets] || []
+      @javascripts = (@options[:combine] || {})[:javascripts] || []
+      @source_dir = @options[:source_dir]
+      @target_dir = @options[:target_dir]
+      @stylesheet_path = (@options[:combine] || {})[:stylesheet_path] || 'combined.css'
+      @javascript_path = (@options[:combine] || {})[:javascript_path] || 'combined.js'
+      @path_prefix = @options[:path_prefix] || ''
+      @manifest = {}
     end
-  
-    def package
-      copy_directories_to_target(@assets.directories)
-      @file_info = {}
-      @assets.files.each do |file|
-        target_file = file_with_revision(file)
-        copy_file_to_target(file,target_file)
-        @file_info[file] = file_info_hash(target_file, File.join(@target_dir, target_file))
-      end
+
+    def to_manifest(path, keep_original = true)
+      content = File.open(File.join(@target_dir, path)) { |f| f.read }
+      extension = File.extname(path)
+      basename = File.basename(path, extension)
+      dirname = File.dirname(path)
+      FileUtils.mkdir_p(File.join(@target_dir, dirname))
+      md5 = Digest::MD5.hexdigest(content)
+      new_file_name = "#{basename}.#{md5}#{extension}"
+      new_file_path = File.join(@target_dir, dirname, new_file_name)
+      File.open(new_file_path, 'w') { |f| f.write content }
+      FileUtils.rm(File.join(@target_dir, path)) unless keep_original
+      manifest_key_path = File.expand_path("/#{dirname}/#{basename}#{extension}")
+      effective_path = File.expand_path(@path_prefix + "/" + File.join(dirname, new_file_name))
+      @manifest[manifest_key_path] = effective_path
+    end
+
+    def manifest_path
+      File.join(@options[:source_dir], @manifest_name)
+    end
+
+    def run
       combine_css
-      write_file_info_file(@file_info, @source_dir)
+      combine_js
+      version_files
+      rewrite_urls_in_css
+      compress_css
+      to_manifest(@stylesheet_path, false)
+      compress_js
+      to_manifest(@javascript_path, false)
+      write_manifest
     end
-    
+
+    def write_manifest
+      File.open(manifest_path, 'w') do |f|
+        f.write JSON.pretty_generate(@manifest)
+      end
+    end
+
+    def version_files
+      FileUtils.cd(@source_dir) do
+        Dir["**/*"].reject{ |f| f =~ /\.(css|js)$/ }.each do |path|
+          if File.directory? path
+            FileUtils.mkdir_p(File.join(@target_dir, path))
+            next
+          end
+          FileUtils.cp(path, File.join(@target_dir, path))
+          to_manifest(path, false)
+        end
+      end
+    end
+
     def combine_css
-      return unless process_css?
-      package_css
-      process_combined_css
-      new_file = append_digest_to_combined_css_file_name
-      update_file_info_for_combined_css(File.basename(new_file), new_file)
+      combine_files(@stylesheets, @stylesheet_path)
     end
-      
-    def generate_file_list
-      file_info = {}
-      @assets.files.each do |file|
-        file_info[file] = file_info_hash(file, File.join(@source_dir,file))
+
+    def rewrite_urls_in_css
+      url_regex = /(^|[{;])(.*?url\(\s*['"]?)(.*?)(['"]?\s*\).*?)([;}]|$)/ui
+      behavior_regex = /behavior:\s*url/ui
+      data_regex = /^\s*data:/ui
+      input = File.open(File.join(@target_dir, @stylesheet_path)){|f| f.read}
+      output = input.gsub(url_regex) do |full_match|
+        pre, url_match, post = ($1 + $2), $3, ($4 + $5)
+        if behavior_regex.match(pre) || data_regex.match(url_match)
+          full_match
+        else
+          path = Addressable::URI.parse("/") + url_match
+          target_url = @manifest[path.to_s]
+          if target_url
+            pre + target_url + post
+          else
+            full_match
+          end
+        end
       end
-      write_file_info_file(file_info, @target_dir)
+      File.open(File.join(@target_dir, @stylesheet_path), 'w') do |f|
+        f.write output
+      end
     end
-  
+
+    def compress_css
+      css = File.open(File.join(@target_dir, @stylesheet_path)){|f| f.read}
+      compressed = Rainpress.compress(css)
+      File.open(File.join(@target_dir, @stylesheet_path), 'w') do |f|
+        f.write compressed
+      end
+    end
+
+    def combine_js
+      combine_files(@javascripts, @javascript_path)
+    end
+
+    def compress_js
+      javascript = File.open(File.join(@target_dir, @javascript_path)){|f| f.read}
+      compressed = Uglifier.compile(javascript)
+      File.open(File.join(@target_dir, @javascript_path), 'w'){|f| f.write compressed}
+    end
+
     private
-    
-    def process_css?
-      @css_packager_options && @css_packager_options[:combined_css_file_path]
-    end
-    
-    def combined_css_file_path
-      @css_packager_options[:combined_css_file_path] || ''
-    end
-  
-    def file_info_hash(path, file)
-      {
-        :url => path,
-        :size_in_bytes => File.size(file)
-      }
-    end
-  
-    def copy_directories_to_target(directories)
-      FileUtils.mkdir_p directories.map{|d| File.join(@target_dir, d)}
-    end
-  
-    def write_file_info_file(file_info, target_dir)
-      File.open(File.join(target_dir, "file_info.json"), "w") do |f|
-        f.write JSON.pretty_generate(file_info)
+
+    def combine_files(files, path)
+      output = ''
+      FileUtils.mkdir_p(File.join(@target_dir, File.dirname(path)))
+      target_path = File.join(@target_dir, path)
+      files.each do |file|
+        output << File.open(File.join(@source_dir, file)) { |f| f.read }
+        output << "\n"
       end
-    end
-    
-    def file_with_revision(file)
-      extension = File.extname(file)
-      if !extension.empty?
-        file.sub(extension,versioned_extension_for_file(file))
-      else
-        file + versioned_extension_for_file(file)
-      end
-    end
-  
-    def versioned_extension_for_file(file)
-      revision = SVNInfo.revision_for_file(File.join(@source_dir,file))
-      extension = File.extname(file)
-      if revision
-        [".#{revision}",@revision_suffix,extension].join
-      else
-        [@revision_suffix,extension].join
-      end
-    end
-  
-    def copy_file_to_target(source,target)
-      FileUtils.cp(File.join(@source_dir,source),File.join(@target_dir,target))
-    end
-    
-    def package_css
-      options = {
-                  :base_dir => @target_dir,
-                  :target_file =>  File.join(@target_dir,combined_css_file_path)
-                }.merge(@css_packager_options)
-      Bagger::CssPackager.new(options).package
-    end
-    
-    def process_combined_css
-      file_info_with_absolute_paths = {}
-      @file_info.each do |path, info|
-        file_info_with_absolute_paths[File.join(@target_dir,path)] = {:url => info[:url]}
-      end
-      CssUrlChanger.process_file_with_map(File.join(@target_dir,combined_css_file_path), file_info_with_absolute_paths)
-    end
-    
-    def append_digest_to_combined_css_file_name
-      digest = Digest::MD5.hexdigest(File.open(File.join(@target_dir,combined_css_file_path)) { |f| f.read})[0,8]
-      basename = File.basename(combined_css_file_path, '.css')
-      new_file_path = File.join(File.dirname(File.join(@target_dir,combined_css_file_path)),"#{basename}.#{digest}.css")
-      File.rename(File.join(@target_dir,combined_css_file_path), new_file_path)
-      new_file_path
-    end
-    
-    def update_file_info_for_combined_css(file_name, new_file_path)
-      relative_path =  File.dirname(File.expand_path(combined_css_file_path,"/"))[1..-1]
-      @file_info[combined_css_file_path] = file_info_hash(File.join(relative_path,file_name),new_file_path)
+      File.open(target_path, "w") { |f| f.write(output) }
     end
   end
 end
