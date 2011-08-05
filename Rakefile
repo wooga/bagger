@@ -4,6 +4,11 @@ require 'rake/testtask'
 
 task :default => ['test:units']
 
+def rubies
+  require 'yaml'
+  rubies = YAML.load_file('.travis.yml')['rvm']
+end
+
 namespace :test do
   Rake::TestTask.new(:units) do |t|
     t.libs << "test"
@@ -14,8 +19,15 @@ namespace :test do
 
   desc 'run test suite with all ruby versions'
   task :multi_ruby do
-    require 'yaml'
-    rubies = YAML.load_file('.travis.yml')['rvm'].join(',')
-    puts `rvm #{rubies} rake`
+    rubies.each do |ruby_version|
+      puts `rvm use #{ruby_version} && rake`
+    end
+  end
+end
+
+desc 'run bundle install for all rubies'
+task :prepare_rubies do
+  rubies.each do |ruby_version|
+    puts `rvm use #{ruby_version} && gem install bundler && bundle`
   end
 end
