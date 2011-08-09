@@ -39,6 +39,11 @@ class BaggerTest < Test::Unit::TestCase
       assert File.exists?(File.join(@source_dir, 'manifest.json')), 'manifest was not created'
     end
 
+    should 'not add the manifest itself to the manfiest' do
+      Bagger.bagit!(default_options)
+      assert !manifest['/manifest.json']
+    end
+
     should 'version files with md5' do
       test_content = 'testcontent'
       write_file(File.join(@source_dir, 'test.txt'), test_content)
