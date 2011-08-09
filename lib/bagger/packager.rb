@@ -50,6 +50,7 @@ module Bagger
       to_manifest(@stylesheet_path, false)
       compress_js
       to_manifest(@javascript_path, false)
+      generate_and_version_cache_manifest
       write_manifest
     end
 
@@ -116,6 +117,19 @@ module Bagger
       javascript = File.open(File.join(@target_dir, @javascript_path)){|f| f.read}
       compressed = Uglifier.compile(javascript)
       File.open(File.join(@target_dir, @javascript_path), 'w'){|f| f.write compressed}
+    end
+
+    def generate_and_version_cache_manifest
+      File.open(File.join(@target_dir, 'cache.manifest'), 'w') do |f|
+        f.puts 'CACHE MANIFEST'
+        f.puts ''
+        f.puts '# Explicitely cached entries'
+        f.puts @manifest.values.join("\n")
+        f.puts ''
+        f.puts 'NETWORK:'
+        f.puts '*'
+      end
+      to_manifest('cache.manifest')
     end
 
     private

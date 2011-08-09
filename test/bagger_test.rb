@@ -62,6 +62,25 @@ class BaggerTest < Test::Unit::TestCase
     end
   end
 
+  context 'html 5 cache manifest' do
+    should 'generate one' do
+      Bagger.bagit!(default_options)
+      expected_path = File.join(@target_dir, 'cache.manifest')
+      assert File.exists?(expected_path), 'cache manifest not found'
+    end
+
+    should 'add the cache manifest to the manifest' do
+      Bagger.bagit!(default_options)
+      assert_match /\/cache\..*\.manifest/, manifest['/cache.manifest']
+    end
+
+    should 'create a versioned cache manifest' do
+      Bagger.bagit!(default_options)
+      expected_path = File.join(@target_dir, manifest['/cache.manifest'])
+      assert File.exists?(expected_path), 'versioned cache manifest not found'
+    end
+  end
+
   context 'css files' do
     setup do
       @config = {
