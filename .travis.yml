@@ -3,4 +3,4 @@ rvm:
   - 1.9.3
   - 1.8.7
   - ree
-  - rbx-head
+  - rbx-2.0
