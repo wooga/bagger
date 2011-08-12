@@ -33,6 +33,14 @@ class BaggerTest < Test::Unit::TestCase
     JSON.parse(json) 
   end
 
+  context 'validations' do
+    should 'verify the source directory exists' do
+      assert_raise(Bagger::ValidationError) do
+        Bagger.bagit!(default_options.merge(:source_dir => '/do/not/exist'))
+      end
+    end
+  end
+
   context 'manifest' do
     should 'generate one' do
       Bagger.bagit!(default_options)

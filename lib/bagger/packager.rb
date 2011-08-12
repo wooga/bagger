@@ -39,6 +39,7 @@ module Bagger
     end
 
     def run
+      validate
       combine_css
       combine_js
       version_files
@@ -142,6 +143,14 @@ module Bagger
         output << "\n"
       end
       File.open(target_path, "w") { |f| f.write(output) }
+    end
+
+    def validate
+      raise_error "Source directory does not exist: #{@source_dir}" unless File.exists?(@source_dir)
+    end
+
+    def raise_error(message)
+      raise ValidationError.new(message)
     end
   end
 end
