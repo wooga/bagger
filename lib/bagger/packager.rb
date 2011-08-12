@@ -15,6 +15,7 @@ module Bagger
       @source_dir = @options[:source_dir]
       @target_dir = @options[:target_dir]
       @manifest_path = @options[:manifest_path] || File.join(@source_dir, 'manifest.json')
+      @cache_manifest_path = @options[:cache_manifest_path] || 'cache.manifest'
       @path_prefix = @options[:path_prefix] || ''
       @manifest = {}
     end
@@ -126,7 +127,9 @@ module Bagger
     end
 
     def generate_and_version_cache_manifest
-      File.open(File.join(@target_dir, 'cache.manifest'), 'w') do |f|
+      path = File.join(@target_dir, @cache_manifest_path)
+      FileUtils.mkdir_p(File.dirname(path))
+      File.open(path, 'w') do |f|
         f.puts 'CACHE MANIFEST'
         f.puts ''
         f.puts '# Explicitely cached entries'
@@ -135,7 +138,7 @@ module Bagger
         f.puts 'NETWORK:'
         f.puts '*'
       end
-      to_manifest('cache.manifest')
+      to_manifest(@cache_manifest_path)
     end
 
     protected
