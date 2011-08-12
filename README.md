@@ -55,10 +55,18 @@ cache.manifest
     :manifest_path => manifest_path,
     :cache_manifest_path => cache_manifest_path,
 	  :combine => {
-	    :stylesheets => stylesheets,
-	    :stylesheet_path => 'css/all.css',
-	    :javascripts => javascripts,
-	    :javascript_path => 'js/combined.js'
+	    :stylesheets => [
+        {
+          :target_path => 'css/all.css',
+          :files => stylesheets
+        }
+      ],
+	    :javascripts => [
+        {
+          :target_path => 'js/combined.js',
+          :files => javascripts
+        }
+      ]
 	  }
 	}
 	
