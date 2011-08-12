@@ -18,18 +18,21 @@
 
 ## v 0.1.0 
 
-* generate custom manifest files e.g with support for file size
-
-    {
-		'/myfile.txt' => {
-							:path => '/myfile.19db9a16e2b73017c575570de577d103.txt'
-							:size => '391'
-						 }
-	}
-
 * support for packages. e.g
 
 	:stylesheets => {
 		:common => ['main.css', 'fonts.css'],
 		:dialogs => ['modal.css', 'info_box.css']
+	}
+
+## v 0.2.0
+
+* generate custom manifest files e.g with support for file size.
+  This can be useful for preloaders
+
+  {
+		'/myfile.txt' => {
+							:path => '/myfile.19db9a16e2b73017c575570de577d103.txt'
+							:size => '391'
+						 }
 	}
