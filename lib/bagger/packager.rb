@@ -10,11 +10,11 @@ module Bagger
 
     def initialize(options)
       @options = options
-      @manifest_name = 'manifest.json'
       @stylesheets = (@options[:combine] || {})[:stylesheets] || []
       @javascripts = (@options[:combine] || {})[:javascripts] || []
       @source_dir = @options[:source_dir]
       @target_dir = @options[:target_dir]
+      @manifest_path = @options[:manifest_path] || File.join(@source_dir, 'manifest.json')
       @stylesheet_path = (@options[:combine] || {})[:stylesheet_path] || 'combined.css'
       @javascript_path = (@options[:combine] || {})[:javascript_path] || 'combined.js'
       @path_prefix = @options[:path_prefix] || ''
@@ -37,10 +37,6 @@ module Bagger
       @manifest[manifest_key_path] = effective_path
     end
 
-    def manifest_path
-      File.join(@options[:source_dir], @manifest_name)
-    end
-
     def run
       combine_css
       combine_js
@@ -55,7 +51,7 @@ module Bagger
     end
 
     def write_manifest
-      File.open(manifest_path, 'w') do |f|
+      File.open(@manifest_path, 'w') do |f|
         f.write JSON.pretty_generate(@manifest)
       end
     end

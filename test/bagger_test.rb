@@ -65,6 +65,12 @@ class BaggerTest < Test::Unit::TestCase
       Bagger.bagit!(default_options.merge(:path_prefix => '/path_prefix'))
       assert_match /\/path_prefix\/test\..*\.txt/, manifest['/test.txt']
     end
+
+    should 'allow to specify the path' do
+      manifest_path = File.join(@target_dir, 'custom.manifest')
+      Bagger.bagit!(default_options.merge(:manifest_path => manifest_path))
+      assert File.exists?(manifest_path), 'custom manifest path not found'
+    end
   end
 
   context 'html 5 cache manifest' do
