@@ -90,6 +90,13 @@ class BaggerTest < Test::Unit::TestCase
       expected_path = File.join(@target_dir, manifest['/cache.manifest'])
       assert File.exists?(expected_path), 'versioned cache manifest not found'
     end
+
+    should 'allow to specify the path' do
+      manifest_path = 'cache/cache.manifest'
+      Bagger.bagit!(default_options.merge(:cache_manifest_path => manifest_path))
+      expected_path = File.join(@target_dir, manifest_path)
+      assert File.exists?(expected_path), 'custom cache manifest path not found'
+    end
   end
 
   context 'css files' do
