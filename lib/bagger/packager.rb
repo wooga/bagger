@@ -11,8 +11,12 @@ module Bagger
     def initialize(options)
       @options = options
       @manifest_name = 'manifest.json'
+      @stylesheets = (@options[:combine] || {})[:stylesheets] || []
+      @javascripts = (@options[:combine] || {})[:javascripts] || []
       @source_dir = @options[:source_dir]
       @target_dir = @options[:target_dir]
+      @stylesheet_path = (@options[:combine] || {})[:stylesheet_path] || 'combined.css'
+      @javascript_path = (@options[:combine] || {})[:javascript_path] || 'combined.js'
       @path_prefix = @options[:path_prefix] || ''
       @manifest = {}
     end
@@ -37,18 +41,15 @@ module Bagger
       File.join(@options[:source_dir], @manifest_name)
     end
 
-    def stylesheets
-      @stylesheets ||= calculate_stylesheets
-    end
-
-    def javascripts
-      @javascripts ||= calculate_javascripts
-    end
-
     def run
-      version_files
       combine_css
       combine_js
+      version_files
+      rewrite_urls_in_css
+      compress_css
+      to_manifest(@stylesheet_path, false)
+      compress_js
+      to_manifest(@javascript_path, false)
       generate_and_version_cache_manifest
       write_manifest
     end
@@ -73,19 +74,14 @@ module Bagger
     end
 
     def combine_css
-      stylesheets.each do |package_name, config|
-        combine_files(config[:files], config[:target_path])
-        rewrite_urls_in_css(config[:target_path])
-        compress_css(config[:target_path])
-        to_manifest(config[:target_path], false)
-      end
+      combine_files(@stylesheets, @stylesheet_path)
     end
 
-    def rewrite_urls_in_css(stylesheet_path)
+    def rewrite_urls_in_css
       url_regex = /(^|[{;])(.*?url\(\s*['"]?)(.*?)(['"]?\s*\).*?)([;}]|$)/ui
       behavior_regex = /behavior:\s*url/ui
       data_regex = /^\s*data:/ui
-      input = File.open(File.join(@target_dir, stylesheet_path)){|f| f.read}
+      input = File.open(File.join(@target_dir, @stylesheet_path)){|f| f.read}
       output = input.gsub(url_regex) do |full_match|
         pre, url_match, post = ($1 + $2), $3, ($4 + $5)
         if behavior_regex.match(pre) || data_regex.match(url_match)
@@ -100,31 +96,27 @@ module Bagger
           end
         end
       end
-      File.open(File.join(@target_dir, stylesheet_path), 'w') do |f|
+      File.open(File.join(@target_dir, @stylesheet_path), 'w') do |f|
         f.write output
       end
     end
 
-    def compress_css(stylesheet_path)
-      css = File.open(File.join(@target_dir, stylesheet_path)){|f| f.read}
+    def compress_css
+      css = File.open(File.join(@target_dir, @stylesheet_path)){|f| f.read}
       compressed = Rainpress.compress(css)
-      File.open(File.join(@target_dir, stylesheet_path), 'w') do |f|
+      File.open(File.join(@target_dir, @stylesheet_path), 'w') do |f|
         f.write compressed
       end
     end
 
     def combine_js
-      javascripts.each do |package_name, config|
-        combine_files(config[:files], config[:target_path])
-        compress_js(config[:target_path])
-        to_manifest(config[:target_path], false)
-      end
+      combine_files(@javascripts, @javascript_path)
     end
 
-    def compress_js(javascript_path)
-      javascript = File.open(File.join(@target_dir, javascript_path)){|f| f.read}
+    def compress_js
+      javascript = File.open(File.join(@target_dir, @javascript_path)){|f| f.read}
       compressed = Uglifier.compile(javascript)
-      File.open(File.join(@target_dir, javascript_path), 'w'){|f| f.write compressed}
+      File.open(File.join(@target_dir, @javascript_path), 'w'){|f| f.write compressed}
     end
 
     def generate_and_version_cache_manifest
@@ -140,7 +132,7 @@ module Bagger
       to_manifest('cache.manifest')
     end
 
-    protected
+    private
 
     def combine_files(files, path)
       output = ''
@@ -152,22 +144,5 @@ module Bagger
       end
       File.open(target_path, "w") { |f| f.write(output) }
     end
-
-        def calculate_stylesheets
-      if @options[:combine] && @options[:combine][:stylesheets]
-        @options[:combine][:stylesheets]
-      else
-        []
-      end
-    end
-
-    def calculate_javascripts
-      if @options[:combine] && @options[:combine][:javascripts]
-        @options[:combine][:javascripts]
-      else
-        []
-      end
-    end
-
   end
 end

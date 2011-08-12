@@ -6,7 +6,7 @@ class BaggerTest < Test::Unit::TestCase
   def setup
     @source_dir = Dir.mktmpdir
     @target_dir = Dir.mktmpdir
-    Uglifier.stubs(:compile).returns('//minified js');
+    Uglifier.stubs(:compile).returns('//minfied js');
   end
 
   def teardown
@@ -89,12 +89,8 @@ class BaggerTest < Test::Unit::TestCase
   context 'css files' do
     setup do
       @config = {
-        :stylesheets => {
-          :combined => {
-            :target_path => 'css/combined.css',
-            :files => []
-          }
-        }
+        :stylesheets => [],
+        :stylesheet_path => 'css/combined.css'
       }
       @css_dir = File.join(@source_dir, 'css')
       FileUtils.mkdir_p(@css_dir)
@@ -103,7 +99,7 @@ class BaggerTest < Test::Unit::TestCase
                     File.join(@css_dir, "#{file}.css"),
                     ".#{file}{}"
                   )
-        @config[:stylesheets][:combined][:files] << "css/#{file}.css"
+        @config[:stylesheets] << "css/#{file}.css"
       end
     end
 
@@ -136,7 +132,7 @@ class BaggerTest < Test::Unit::TestCase
       assert !File.exists?(File.join(@target_dir, 'css', 'one.css'))
     end
 
-    should 'minify it' do
+    should 'compress it' do
       Rainpress.stubs(:compress).returns('//super minified css');
       Bagger.bagit!(
         :source_dir => @source_dir,
@@ -162,7 +158,7 @@ class BaggerTest < Test::Unit::TestCase
         }
         EOF
         write_file(File.join(@css_dir, "urled.css"), css)
-        @config[:stylesheets][:combined][:files] << 'css/urled.css'
+        @config[:stylesheets] << 'css/urled.css'
         FileUtils.mkdir_p(File.join(@source_dir, 'images'))
         %w(root relative absolute).each do |type|
           FileUtils.touch(File.join(@source_dir, 'images', "#{type}.png"))
@@ -216,12 +212,8 @@ class BaggerTest < Test::Unit::TestCase
   context 'combine javascript' do
     setup do
       @config = {
-        :javascripts => {
-          :combined => {
-            :target_path => 'js/combined.js',
-            :files => [],
-          }
-        },
+        :javascripts => [],
+        :javascript_path => 'js/combined.js'
       }
       @js_dir = File.join(@source_dir, 'js')
       FileUtils.mkdir_p(@js_dir)
@@ -230,7 +222,7 @@ class BaggerTest < Test::Unit::TestCase
                     File.join(@js_dir, "#{file}.js"),
                     "var #{file} = 1;"
                   )
-        @config[:javascripts][:combined][:files] << "js/#{file}.js"
+        @config[:javascripts] << "js/#{file}.js"
       end
     end
 
@@ -274,80 +266,5 @@ class BaggerTest < Test::Unit::TestCase
       expected_file_path = File.join(@target_dir, manifest['/js/combined.js'])
       assert_equal '//minified javascript', File.open(expected_file_path){|f| f.read}
     end
-  end
-
-  context 'packages' do
-
-    setup do
-      @config = {
-        :javascripts => {
-          :common => {
-            :target_path => 'js/common.js',
-            :files => []
-          },
-          :navigation => {
-            :target_path => 'js/navigation.js',
-            :files => []
-          }
-        },
-        :stylesheets => {
-          :common => {
-            :target_path => 'css/common.css',
-            :files => []
-          },
-          :navigation => {
-            :target_path => 'css/navigation.css',
-            :files => []
-          }
-      }
-      }
-      @js_dir = File.join(@source_dir, 'js')
-      FileUtils.mkdir_p(@js_dir)
-      @css_dir = File.join(@source_dir, 'css')
-      FileUtils.mkdir_p(@css_dir)
-
-      %w(one two).each do |file|
-        write_file(
-                    File.join(@js_dir, "#{file}.js"),
-                    "var #{file} = 1;"
-                  )
-        write_file(
-                    File.join(@css_dir, "#{file}.css"),
-                    "##{file} { color : black }"
-                  )
-      end
-      @config[:javascripts][:common][:files] << 'js/one.js';
-      @config[:javascripts][:navigation][:files] << 'js/two.js';
-      @config[:stylesheets][:common][:files] << 'css/one.css';
-      @config[:stylesheets][:navigation][:files] << 'css/two.css';
-
-      Rainpress.stubs(:compress).returns('//minified css');
-    end
-
-
-    should 'allow to bundle javascript into packages' do
-      Bagger.bagit!(
-        :source_dir => @source_dir,
-        :target_dir => @target_dir,
-        :combine => @config
-      )
-      expected_file_path = File.join(@target_dir, manifest['/js/common.js'])
-      assert_equal '//minified js', File.open(expected_file_path){|f| f.read}
-      expected_file_path = File.join(@target_dir, manifest['/js/navigation.js'])
-      assert_equal '//minified js', File.open(expected_file_path){|f| f.read}
-    end
-
-    should 'allow to bundle stylesheets into packages' do
-      Bagger.bagit!(
-        :source_dir => @source_dir,
-        :target_dir => @target_dir,
-        :combine => @config
-      )
-      expected_file_path = File.join(@target_dir, manifest['/css/common.css'])
-      assert_equal '//minified css', File.open(expected_file_path){|f| f.read}
-      expected_file_path = File.join(@target_dir, manifest['/css/navigation.css'])
-      assert_equal '//minified css', File.open(expected_file_path){|f| f.read}
-    end
-
   end
 end
