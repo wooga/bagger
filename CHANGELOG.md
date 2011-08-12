@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v 0.0.2
+
+* Make file and cache manifest path configurable
+* Validate that the source directory actually exists
+
 ## v 0.0.1
 
 * Combines javascript
