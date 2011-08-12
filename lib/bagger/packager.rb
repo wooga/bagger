@@ -73,7 +73,7 @@ module Bagger
     end
 
     def combine_css
-      stylesheets.each do |config|
+      stylesheets.each do |package_name, config|
         combine_files(config[:files], config[:target_path])
         rewrite_urls_in_css(config[:target_path])
         compress_css(config[:target_path])
@@ -114,7 +114,7 @@ module Bagger
     end
 
     def combine_js
-      javascripts.each do |config|
+      javascripts.each do |package_name, config|
         combine_files(config[:files], config[:target_path])
         compress_js(config[:target_path])
         to_manifest(config[:target_path], false)
@@ -153,7 +153,7 @@ module Bagger
       File.open(target_path, "w") { |f| f.write(output) }
     end
 
-    def calculate_stylesheets
+        def calculate_stylesheets
       if @options[:combine] && @options[:combine][:stylesheets]
         @options[:combine][:stylesheets]
       else

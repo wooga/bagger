@@ -89,10 +89,12 @@ class BaggerTest < Test::Unit::TestCase
   context 'css files' do
     setup do
       @config = {
-        :stylesheets => [{
-          :target_path => 'css/combined.css',
-          :files => []
-        }]
+        :stylesheets => {
+          :combined => {
+            :target_path => 'css/combined.css',
+            :files => []
+          }
+        }
       }
       @css_dir = File.join(@source_dir, 'css')
       FileUtils.mkdir_p(@css_dir)
@@ -101,7 +103,7 @@ class BaggerTest < Test::Unit::TestCase
                     File.join(@css_dir, "#{file}.css"),
                     ".#{file}{}"
                   )
-        @config[:stylesheets][0][:files] << "css/#{file}.css"
+        @config[:stylesheets][:combined][:files] << "css/#{file}.css"
       end
     end
 
@@ -160,7 +162,7 @@ class BaggerTest < Test::Unit::TestCase
         }
         EOF
         write_file(File.join(@css_dir, "urled.css"), css)
-        @config[:stylesheets][0][:files] << 'css/urled.css'
+        @config[:stylesheets][:combined][:files] << 'css/urled.css'
         FileUtils.mkdir_p(File.join(@source_dir, 'images'))
         %w(root relative absolute).each do |type|
           FileUtils.touch(File.join(@source_dir, 'images', "#{type}.png"))
@@ -214,12 +216,12 @@ class BaggerTest < Test::Unit::TestCase
   context 'combine javascript' do
     setup do
       @config = {
-        :javascripts => [
-          {
+        :javascripts => {
+          :combined => {
             :target_path => 'js/combined.js',
-            :files => []
+            :files => [],
           }
-        ]
+        },
       }
       @js_dir = File.join(@source_dir, 'js')
       FileUtils.mkdir_p(@js_dir)
@@ -228,7 +230,7 @@ class BaggerTest < Test::Unit::TestCase
                     File.join(@js_dir, "#{file}.js"),
                     "var #{file} = 1;"
                   )
-        @config[:javascripts][0][:files] << "js/#{file}.js"
+        @config[:javascripts][:combined][:files] << "js/#{file}.js"
       end
     end
 
@@ -278,26 +280,26 @@ class BaggerTest < Test::Unit::TestCase
 
     setup do
       @config = {
-        :javascripts => [
-          {
+        :javascripts => {
+          :common => {
             :target_path => 'js/common.js',
             :files => []
           },
-          {
+          :navigation => {
             :target_path => 'js/navigation.js',
             :files => []
           }
-        ],
-        :stylesheets => [
-          {
+        },
+        :stylesheets => {
+          :common => {
             :target_path => 'css/common.css',
             :files => []
           },
-          {
+          :navigation => {
             :target_path => 'css/navigation.css',
             :files => []
           }
-        ]
+      }
       }
       @js_dir = File.join(@source_dir, 'js')
       FileUtils.mkdir_p(@js_dir)
@@ -314,10 +316,10 @@ class BaggerTest < Test::Unit::TestCase
                     "##{file} { color : black }"
                   )
       end
-      @config[:javascripts][0][:files] << 'js/one.js';
-      @config[:javascripts][1][:files] << 'js/two.js';
-      @config[:stylesheets][0][:files] << 'css/one.css';
-      @config[:stylesheets][1][:files] << 'css/two.css';
+      @config[:javascripts][:common][:files] << 'js/one.js';
+      @config[:javascripts][:navigation][:files] << 'js/two.js';
+      @config[:stylesheets][:common][:files] << 'css/one.css';
+      @config[:stylesheets][:navigation][:files] << 'css/two.css';
 
       Rainpress.stubs(:compress).returns('//minified css');
     end
