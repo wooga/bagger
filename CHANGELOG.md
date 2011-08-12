@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v 0.1.0
+
+* Combine javascript and stylesheets into several packages
+* Change of configuration API. The javascript and stylesheets are now
+  defined as an array. See the updated README.md for an example
+
 ## v 0.0.2
 
 * Make file and cache manifest path configurable
