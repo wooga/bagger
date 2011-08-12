@@ -45,6 +45,7 @@ module Bagger
     end
 
    def run
+      validate
       version_files
       combine_css
       combine_js
@@ -170,5 +171,12 @@ module Bagger
       end
     end
 
+    def validate
+      raise_error "Source directory does not exist: #{@source_dir}" unless File.exists?(@source_dir)
+    end
+
+    def raise_error(message)
+      raise ValidationError.new(message)
+    end
   end
 end
