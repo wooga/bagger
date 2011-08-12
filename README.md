@@ -31,6 +31,13 @@ on the client side by using the following techniques:
 	# define source and target directories
 	target_dir = "/tmp/bundled_assets"
 	source_dir = "/applications/my_app/public"
+  
+  # customize paths for file and cache manifest
+  manifest_path = File.join(target_dir, 'file_manifest.json') #defaults
+to manifest.json
+
+  cache_manifest_path = 'cache/cache.manifest' # defaults to
+cache.manifest
 	
 	# list the stylesheets and javascripts to be combined
 	# and minified. The order is important, because otherwhise
@@ -45,6 +52,8 @@ on the client side by using the following techniques:
 	options = {
 	  :source_dir => target_dir,
 	  :target_dir => source_dir,
+    :manifest_path => manifest_path,
+    :cache_manifest_path => cache_manifest_path,
 	  :combine => {
 	    :stylesheets => stylesheets,
 	    :stylesheet_path => 'css/all.css',
