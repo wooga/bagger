@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v 0.1.1
+
+* Do not version cache manifest (http://diveintohtml5.org/offline.html)
+
 ## v 0.1.0
 
 * Combine javascript and stylesheets into several packages
