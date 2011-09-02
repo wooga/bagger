@@ -90,13 +90,13 @@ class BaggerTest < Test::Unit::TestCase
 
     should 'add the cache manifest to the manifest' do
       Bagger.bagit!(default_options)
-      assert_match /\/cache\..*\.manifest/, manifest['/cache.manifest']
+      assert_equal "/cache.manifest", manifest['/cache.manifest']
     end
 
-    should 'create a versioned cache manifest' do
+    should 'not version the cache manifest (http://diveintohtml5.org/offline.html)' do
       Bagger.bagit!(default_options)
-      expected_path = File.join(@target_dir, manifest['/cache.manifest'])
-      assert File.exists?(expected_path), 'versioned cache manifest not found'
+      expected_path = File.join(@target_dir, 'cache.manifest')
+      assert File.exists?(expected_path), 'unversionened cache manifest not found'
     end
 
     should 'allow to specify the path' do

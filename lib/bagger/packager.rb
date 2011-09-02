@@ -20,6 +20,10 @@ module Bagger
       @manifest = {}
     end
 
+    def add_to_manifest(key, path)
+      @manifest[key] = File.expand_path(@path_prefix + "/" + path)
+    end
+
     def to_manifest(path, keep_original = true)
       content = File.open(File.join(@target_dir, path)) { |f| f.read }
       extension = File.extname(path)
@@ -32,9 +36,8 @@ module Bagger
       File.open(new_file_path, 'w') { |f| f.write content }
       FileUtils.rm(File.join(@target_dir, path)) unless keep_original
       manifest_key_path = File.expand_path("/#{dirname}/#{basename}#{extension}")
-      effective_path = File.expand_path(@path_prefix + "/" + File.join(dirname, new_file_name))
-      @manifest[manifest_key_path] = effective_path
-    end
+      add_to_manifest(manifest_key_path, File.join(dirname, new_file_name))
+   end
 
     def stylesheets
       @stylesheets ||= calculate_stylesheets
@@ -49,7 +52,7 @@ module Bagger
       version_files
       combine_css
       combine_js
-      generate_and_version_cache_manifest
+      generate_cache_manifest
       write_manifest
     end
 
@@ -127,7 +130,11 @@ module Bagger
       File.open(File.join(@target_dir, javascript_path), 'w'){|f| f.write compressed}
     end
 
-    def generate_and_version_cache_manifest
+    # IMPORTANT:html 5 cache manifest should not be cached
+    # because that would treat it as a new manifest with
+    # new resources discarding the ones already downloaded
+    # http://diveintohtml5.org/offline.html
+    def generate_cache_manifest
       path = File.join(@target_dir, @cache_manifest_path)
       FileUtils.mkdir_p(File.dirname(path))
       File.open(path, 'w') do |f|
@@ -139,7 +146,7 @@ module Bagger
         f.puts 'NETWORK:'
         f.puts '*'
       end
-      to_manifest(@cache_manifest_path)
+      add_to_manifest(File.join("/", @cache_manifest_path), @cache_manifest_path)
     end
 
     protected
