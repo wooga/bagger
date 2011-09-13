@@ -178,8 +178,8 @@ class BaggerTest < Test::Unit::TestCase
         }
 
         #multipleUrls {
-            background-image: url("../images/relative.png"),
-                              url("/images/multiple.png");
+            background-image: url(../images/relative.png) no-repeat 0% 20%,
+                              url(/images/multiple.png) no-repeat -20px 0;
         }
 
         #absoluteUrl {
