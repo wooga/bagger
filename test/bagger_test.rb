@@ -176,6 +176,11 @@ class BaggerTest < Test::Unit::TestCase
         #relativeUrl {
             background: url("../images/relative.png") top center;
         }
+
+        #multipleUrls {
+            background-image: url("../images/relative.png"), url("/images/multiple.png");
+        }
+
         #absoluteUrl {
             background: url('http://localhost/absolute.png') top center;
         }
@@ -183,7 +188,7 @@ class BaggerTest < Test::Unit::TestCase
         write_file(File.join(@css_dir, "urled.css"), css)
         @config[:stylesheets][0][:files] << 'css/urled.css'
         FileUtils.mkdir_p(File.join(@source_dir, 'images'))
-        %w(root relative absolute).each do |type|
+        %w(root relative multiple absolute).each do |type|
           FileUtils.touch(File.join(@source_dir, 'images', "#{type}.png"))
         end
       end
@@ -206,6 +211,18 @@ class BaggerTest < Test::Unit::TestCase
         )
         combined_css = File.open(File.join(@target_dir, manifest['/css/combined.css'])){|f| f.read}
         assert combined_css.include?(manifest['/images/relative.png'])
+      end
+
+      should 'rewrite multiple urls in one line' do
+        Bagger.bagit!(
+          :source_dir => @source_dir,
+          :target_dir => @target_dir,
+          :combine => @config
+        )
+        combined_css = File.open(File.join(@target_dir, manifest['/css/combined.css'])){|f| f.read}
+        puts combined_css
+        assert combined_css.include?(manifest['/images/relative.png'])
+        assert combined_css.include?(manifest['/images/multiple.png'])
       end
 
       should 'not rewrite absolute urls' do
