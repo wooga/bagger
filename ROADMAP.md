@@ -36,3 +36,8 @@
 							:size => '391'
 						 }
 	}
+
+* Support for multiple cache manifests (useful if you have different
+  resources for different devices)
+* Support for lesscss as a preprocessor
+* Support for sass as a preprocessor
