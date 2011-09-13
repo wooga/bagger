@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v 0.1.2
+
+* Hotfix for problems with multiple urls per background directive (Horia Dragomir)
+
 ## v 0.1.1
 
 * Do not version cache manifest (http://diveintohtml5.org/offline.html)
