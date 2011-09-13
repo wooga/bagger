@@ -85,7 +85,7 @@ module Bagger
     end
 
     def rewrite_urls_in_css(stylesheet_path)
-      url_regex = /(^|[{;])(.*?url\(\s*['"]?)(.*?)(['"]?\s*\).*?)([;}]|$)/ui
+      url_regex = /(^|[{;])(.*?url\(\s*['"]?)(.*?)(['"]?\s*\).*?)([,;}]|$)/ui
       behavior_regex = /behavior:\s*url/ui
       data_regex = /^\s*data:/ui
       input = File.open(File.join(@target_dir, stylesheet_path)){|f| f.read}
