@@ -178,7 +178,8 @@ class BaggerTest < Test::Unit::TestCase
         }
 
         #multipleUrls {
-            background-image: url("../images/relative.png"), url("/images/multiple.png");
+            background-image: url("../images/relative.png"),
+                              url("/images/multiple.png");
         }
 
         #absoluteUrl {
@@ -220,7 +221,6 @@ class BaggerTest < Test::Unit::TestCase
           :combine => @config
         )
         combined_css = File.open(File.join(@target_dir, manifest['/css/combined.css'])){|f| f.read}
-        puts combined_css
         assert combined_css.include?(manifest['/images/relative.png'])
         assert combined_css.include?(manifest['/images/multiple.png'])
       end

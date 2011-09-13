@@ -84,8 +84,18 @@ module Bagger
       end
     end
 
+    def rewrite2(path)
+      url_regex = /url\(\s*['"](.+)\s*['"]\)/ui
+      behavior_regex = /behavior:\s*url/ui
+      data_regex = /^\s*data:/ui
+      input = File.open(File.join(@target_dir, path)).readlines.each do |line|
+        # puts line.match(url_regex).inspect
+      end
+    end
+
     def rewrite_urls_in_css(stylesheet_path)
-      url_regex = /(^|[{;])(.*?url\(\s*['"]?)(.*?)(['"]?\s*\).*?)([,;}]|$)/ui
+      rewrite2(stylesheet_path)
+      url_regex = /(^|[{;,])(.*?url\(\s*['"]?)(.*?)(['"]?\s*\).*?)([,;}]|$)/ui
       behavior_regex = /behavior:\s*url/ui
       data_regex = /^\s*data:/ui
       input = File.open(File.join(@target_dir, stylesheet_path)){|f| f.read}
