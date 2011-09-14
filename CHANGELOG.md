@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## v 0.2.1
+
+ * Updating this particular roadmap
+
+## v 0.2.0
+
+* Support for cache manifest bundles. Useful for different target
+  devices
+
 ## v 0.1.2
 
 * Hotfix for problems with multiple urls per background directive (Horia Dragomir)
