@@ -44,6 +44,13 @@ cache.manifest
 	# the behavior of the stylesheets and javascripts might change
 	stylesheets = ["css/style.css", "css/reset.css"]
 	javascripts = ["js/app.js", "js/utils.js"]
+
+  # define cache manifest bundles for different devices
+  # for convencien, the manfiest defined with `cache_manifest_path`
+  # will always contain all resources
+  ipad_resources = ["images/troll-big.png"]
+  iphone_retina_resources = ["images/troll-retina.png"]
+  desktop_browser_resources = ["images/troll.png"]
 	
 	# make sure the target directory exists
 	FileUtils.mkdir_p target_dir
@@ -67,7 +74,21 @@ cache.manifest
           :files => javascripts
         }
       ]
-	  }
+	  },
+    :cache_manifests => [
+      {
+        :target_path => 'cache/ipad-cache.manifest',
+        :files => ipad_resources
+      },
+      {
+        :target_path => 'cache/retina-cache.manifest',
+        :files => iphone_retina_resources
+      },
+      {
+        :target_path => 'cache/desktop.manifest',
+        :files => desktop_browser_resources
+      }
+    ]
 	}
 	
 	# run it
