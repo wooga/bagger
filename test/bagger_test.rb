@@ -105,6 +105,46 @@ class BaggerTest < Test::Unit::TestCase
       expected_path = File.join(@target_dir, manifest_path)
       assert File.exists?(expected_path), 'custom cache manifest path not found'
     end
+
+    context 'packages' do
+      setup do
+        @images_dir = File.join(@source_dir, 'images')
+        FileUtils.mkdir_p(@images_dir)
+        FileUtils.touch(File.join(@images_dir, 'retina.png'))
+        FileUtils.touch(File.join(@images_dir, 'ipad.png'))
+
+        @manifest_options = {
+          :cache_manifests => [
+            {
+              :target_path => 'cache/retina-cache.manifest',
+              :files => ['images/retina.png']
+            },
+            {
+              :target_path => 'cache/ipad-cache.manifest',
+              :files => ['images/ipad.png']
+            }
+          ]
+        }
+      end
+
+      should 'add the cache files' do
+        Bagger.bagit!(default_options.merge(@manifest_options))
+        assert File.exists?(File.join(@target_dir, 'cache/retina-cache.manifest'))
+        assert File.exists?(File.join(@target_dir, 'cache/ipad-cache.manifest'))
+      end
+
+      should 'add the files listed to the respective manifest' do
+        Bagger.bagit!(default_options.merge(@manifest_options))
+        cache_file_content = File.open(File.join(@target_dir, 'cache/retina-cache.manifest')){|f| f.read}
+        assert cache_file_content.include?(manifest['/images/retina.png'])
+      end
+
+      should 'only add the files listed' do
+        Bagger.bagit!(default_options.merge(@manifest_options))
+        cache_file_content = File.open(File.join(@target_dir, 'cache/retina-cache.manifest')){|f| f.read}
+        assert !cache_file_content.include?(manifest['/images/ipad.png'])
+      end
+    end
   end
 
   context 'css files' do

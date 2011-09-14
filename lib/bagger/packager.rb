@@ -52,7 +52,7 @@ module Bagger
       version_files
       combine_css
       combine_js
-      generate_cache_manifest
+      generate_cache_manifests
       write_manifest
     end
 
@@ -130,23 +130,38 @@ module Bagger
       File.open(File.join(@target_dir, javascript_path), 'w'){|f| f.write compressed}
     end
 
+    def generate_cache_manifests
+      cache_manifests = @options[:cache_manifests] || []
+      if @cache_manifest_path
+        cache_manifests << { 
+          :target_path => @cache_manifest_path,
+          :files => @manifest.keys
+        }
+      end
+      cache_manifests.each do |cache_manifest|
+        generate_cache_manifest(cache_manifest)
+      end
+    end
+
     # IMPORTANT:html 5 cache manifest should not be cached
     # because that would treat it as a new manifest with
     # new resources discarding the ones already downloaded
     # http://diveintohtml5.org/offline.html
-    def generate_cache_manifest
-      path = File.join(@target_dir, @cache_manifest_path)
+    def generate_cache_manifest(cache_manifest)
+      path = File.join(@target_dir, cache_manifest[:target_path])
       FileUtils.mkdir_p(File.dirname(path))
       File.open(path, 'w') do |f|
         f.puts 'CACHE MANIFEST'
         f.puts ''
         f.puts '# Explicitely cached entries'
-        f.puts @manifest.values.join("\n")
+        cache_manifest[:files].each do |relative_path|
+          f.puts @manifest[File.join('/', relative_path)]
+        end
         f.puts ''
         f.puts 'NETWORK:'
         f.puts '*'
       end
-      add_to_manifest(File.join("/", @cache_manifest_path), @cache_manifest_path)
+      add_to_manifest(File.join("/", cache_manifest[:target_path]), cache_manifest[:target_path])
     end
 
     protected
