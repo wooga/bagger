@@ -56,38 +56,38 @@ on the client side by using the following techniques:
 	
 	# define the options hash
 	options = {
-	  :source_dir => target_dir,
-	  :target_dir => source_dir,
-    :manifest_path => manifest_path,
-    :cache_manifest_path => cache_manifest_path,
-	  :combine => {
-	    :stylesheets => [
-        {
-          :target_path => 'css/all.css',
-          :files => stylesheets
-        }
-      ],
-	    :javascripts => [
-        {
-          :target_path => 'js/combined.js',
-          :files => javascripts
-        }
-      ]
-	  },
-    :cache_manifests => [
-      {
-        :target_path => 'cache/ipad-cache.manifest',
-        :files => ipad_resources
-      },
-      {
-        :target_path => 'cache/retina-cache.manifest',
-        :files => iphone_retina_resources
-      },
-      {
-        :target_path => 'cache/desktop.manifest',
-        :files => desktop_browser_resources
-      }
-    ]
+		:source_dir => target_dir,
+		:target_dir => source_dir,
+		:manifest_path => manifest_path,
+		:cache_manifest_path => cache_manifest_path,
+		:combine => {
+		 :stylesheets => [
+		    {
+		      :target_path => 'css/all.css',
+		      :files => stylesheets
+		    }
+		  ],
+		 :javascripts => [
+		    {
+		      :target_path => 'js/combined.js',
+		      :files => javascripts
+		    }
+		  ]
+		},
+		:cache_manifests => [
+		  {
+		    :target_path => 'cache/ipad-cache.manifest',
+		    :files => ipad_resources
+		  },
+		  {
+		    :target_path => 'cache/retina-cache.manifest',
+		    :files => iphone_retina_resources
+		  },
+		  {
+		    :target_path => 'cache/desktop.manifest',
+		    :files => desktop_browser_resources
+		  }
+		]
 	}
 	
 	# run it
