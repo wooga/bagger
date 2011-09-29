@@ -1,5 +1,10 @@
 # CHANGELOG
 
+# v 0.3.1
+
+ * Support for exclude_files and exclude_pattern. For times when you
+   don't want certain files to be processed by bagger
+
 ## v 0.2.1
 
  * Updating this particular roadmap
