@@ -60,6 +60,8 @@ on the client side by using the following techniques:
 		:target_dir => source_dir,
 		:manifest_path => manifest_path,
 		:cache_manifest_path => cache_manifest_path,
+    :exclude_pattern => /.*\.less/,
+    :exclude_files => [ 'css/main.sass', 'css/style.sass' ]
 		:combine => {
 		 :stylesheets => [
 		    {

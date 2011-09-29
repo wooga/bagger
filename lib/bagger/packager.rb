@@ -17,6 +17,8 @@ module Bagger
       @manifest_path = @options[:manifest_path] || File.join(@source_dir, 'manifest.json')
       @cache_manifest_path = @options[:cache_manifest_path] || 'cache.manifest'
       @path_prefix = @options[:path_prefix] || ''
+      @exclude_files = Array(@options[:exclude_files])
+      @exclude_pattern = @options[:exclude_pattern]
       @manifest = {}
     end
 
@@ -64,11 +66,12 @@ module Bagger
 
     def version_files
       FileUtils.cd(@source_dir) do
-        Dir["**/*"].reject{ |f| f =~ /\.(css|js)$/ }.each do |path|
+        Dir["**/*"].reject{ |f| exclude_file?(f) }.each do |path|
           if File.directory? path
             FileUtils.mkdir_p(File.join(@target_dir, path))
             next
           end
+
           FileUtils.cp(path, File.join(@target_dir, path))
           to_manifest(path, false)
         end
@@ -199,6 +202,10 @@ module Bagger
 
     def raise_error(message)
       raise ValidationError.new(message)
+    end
+
+    def exclude_file?(path)
+      path =~ /\.(css|js)$/ || @exclude_files.include?(path) || (@exclude_pattern && path =~ @exclude_pattern)
     end
   end
 end

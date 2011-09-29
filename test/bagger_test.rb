@@ -79,6 +79,18 @@ class BaggerTest < Test::Unit::TestCase
       Bagger.bagit!(default_options.merge(:manifest_path => manifest_path))
       assert File.exists?(manifest_path), 'custom manifest path not found'
     end
+
+    should 'support an exclude file list' do
+      write_file(File.join(@source_dir, 'test.txt'), 'foo')
+      Bagger.bagit!(default_options.merge(:exclude_files => 'test.txt'))
+      assert_nil manifest['/test.txt']
+    end
+
+    should 'support an exclude file pattern' do
+      write_file(File.join(@source_dir, 'test.txt'), 'foo')
+      Bagger.bagit!(default_options.merge(:exclude_pattern => /.*\.txt/))
+      assert_nil manifest['/test.txt']
+    end
   end
 
   context 'html 5 cache manifest' do
