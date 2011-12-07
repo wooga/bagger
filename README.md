@@ -60,6 +60,8 @@ on the client side by using the following techniques:
 		:target_dir => source_dir,
 		:manifest_path => manifest_path,
 		:cache_manifest_path => cache_manifest_path,
+    :path_prefix => '',
+    :css_path_prefix => '',
     :exclude_pattern => /.*\.less/,
     :exclude_files => [ 'css/main.sass', 'css/style.sass' ]
 		:combine => {
@@ -95,8 +97,6 @@ on the client side by using the following techniques:
 	# run it
 	Bagger::bagit!(options)
 	
-	# TODO: at this point, the paths for the manifest and html 5 cache manifest
-	# are hardcoded.
 	manifest_path = File.join(target_dir, 'manifest.json')
 	cache_manifest_path = File.join(target_dir, 'cache.json')
 	

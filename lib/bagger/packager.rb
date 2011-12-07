@@ -17,6 +17,7 @@ module Bagger
       @manifest_path = @options[:manifest_path] || File.join(@source_dir, 'manifest.json')
       @cache_manifest_path = @options[:cache_manifest_path] || 'cache.manifest'
       @path_prefix = @options[:path_prefix] || ''
+      @css_path_prefix = @options[:css_path_prefix] || ''
       @exclude_files = Array(@options[:exclude_files])
       @exclude_pattern = @options[:exclude_pattern]
       @manifest = {}
@@ -100,7 +101,7 @@ module Bagger
           path = Addressable::URI.parse("/") + url_match
           target_url = @manifest[path.to_s]
           if target_url
-            pre + target_url + post
+            pre + @css_path_prefix + target_url + post
           else
             full_match
           end

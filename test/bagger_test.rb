@@ -312,6 +312,19 @@ class BaggerTest < Test::Unit::TestCase
         combined_css = File.open(File.join(@target_dir, combined_css_path)){|f| f.read}
         assert_match /\/path_prefix\/images\/relative\..*\.png/, combined_css
       end
+
+      # this is useful for pages being delivered outside a webserver
+      # think phonegap
+      should 'support a css specific path prefix for rewritten urls' do
+        Bagger.bagit!(
+          :source_dir => @source_dir,
+          :target_dir => @target_dir,
+          :css_path_prefix => '/css_path_prefix',
+          :combine => @config
+        )
+        combined_css = File.open(File.join(@target_dir, manifest['/css/combined.css'])){|f| f.read}
+        assert_match /css_path_prefix\/images\/relative\..*\.png/, combined_css
+      end
     end
   end
 
