@@ -1,5 +1,10 @@
 # CHANGELOG
 
+# v 0.4.0
+
+  * Support for css_path_prefix allows rewritten urls in stylesheets to
+    be prefixed with a different path
+
 # v 0.3.1
 
  * Support for exclude_files and exclude_pattern. For times when you
