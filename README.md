@@ -56,14 +56,14 @@ on the client side by using the following techniques:
 	
 	# define the options hash
 	options = {
-		:source_dir => target_dir,
-		:target_dir => source_dir,
+		:source_dir => source_dir,
+		:target_dir => target_dir,
 		:manifest_path => manifest_path,
 		:cache_manifest_path => cache_manifest_path,
-    :path_prefix => '',
-    :css_path_prefix => '',
-    :exclude_pattern => /.*\.less/,
-    :exclude_files => [ 'css/main.sass', 'css/style.sass' ]
+    		:path_prefix => '',
+    		:css_path_prefix => '',
+    		:exclude_pattern => /.*\.less/,
+    		:exclude_files => [ 'css/main.sass', 'css/style.sass' ]
 		:combine => {
 		 :stylesheets => [
 		    {
