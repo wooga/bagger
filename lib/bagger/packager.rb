@@ -12,8 +12,6 @@ module Bagger
       @options = options
       @source_dir = @options[:source_dir]
       @target_dir = @options[:target_dir]
-      @source_dir = @options[:source_dir]
-      @target_dir = @options[:target_dir]
       @manifest_path = @options[:manifest_path] || File.join(@source_dir, 'manifest.json')
       @cache_manifest_path = @options[:cache_manifest_path] || 'cache.manifest'
       @path_prefix = @options[:path_prefix] || ''
