@@ -25,7 +25,7 @@ def ruby(*paths)
 end
 
 def tests
-  Dir['test/**/test_*.rb'] - ['test/test_helper.rb']
+  Dir['test/**/*_test.rb'] - ['test/test_helper.rb']
 end
 
 def run( cmd )

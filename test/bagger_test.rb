@@ -91,6 +91,15 @@ class BaggerTest < Test::Unit::TestCase
       Bagger.bagit!(default_options.merge(:exclude_pattern => /.*\.txt/))
       assert_nil manifest['/test.txt']
     end
+
+    should 'support file sizes in an extended manifest' do
+      path = File.join(@source_dir, 'test.txt')
+      write_file(path, 'foo')
+      file_size = File.size(path)
+      Bagger.bagit!(default_options.merge(:extended_manifest => true))
+      assert_match /\/test\..*\.txt/, manifest['/test.txt']['path']
+      assert_equal file_size, manifest['/test.txt']['size']
+    end
   end
 
   context 'html 5 cache manifest' do
@@ -217,6 +226,24 @@ class BaggerTest < Test::Unit::TestCase
       expected_file_path = File.join(@target_dir, manifest['/css/combined.css'])
       compressed_content = File.open(expected_file_path){|f| f.read}
       assert_equal '//super minified css', compressed_content , 'combined css not found'
+    end
+
+    should 'support gzipping css targets' do
+      Rainpress.stubs(:compress).returns('//minified css');
+      Bagger.bagit!(
+        :source_dir => @source_dir,
+        :target_dir => @target_dir,
+        :gzip => true,
+        :combine => @config
+      )
+
+      expected_file_path = File.join(@target_dir, manifest['/css/combined.css'])
+      assert File.exists?(expected_file_path), 'original target does not exist'
+      assert_nil manifest['/css/combined.css.gz'], 'gzipped copy should not be in manifest'
+      expected_file_path << '.gz'
+      assert File.exists?(expected_file_path), 'gzipped copy does not exist'
+      gz_content = Zlib::GzipReader.open(expected_file_path){|gz| gz.read}
+      assert_equal '//minified css', gz_content, 'gzipped copy does not match original'
     end
 
     context 'url rewriting' do
@@ -388,6 +415,24 @@ class BaggerTest < Test::Unit::TestCase
       )
       expected_file_path = File.join(@target_dir, manifest['/js/combined.js'])
       assert_equal '//minified javascript', File.open(expected_file_path){|f| f.read}
+    end
+
+    should 'support gzipping js targets' do
+      Uglifier.expects(:compile).returns('//minified js')
+      Bagger.bagit!(
+        :source_dir => @source_dir,
+        :target_dir => @target_dir,
+        :gzip => true,
+        :combine => @config
+      )
+
+      expected_file_path = File.join(@target_dir, manifest['/js/combined.js'])
+      assert File.exists?(expected_file_path), 'original target does not exist'
+      assert_nil manifest['/js/combined.js.gz'], 'gzipped copy should not be in manifest'
+      expected_file_path << '.gz'
+      assert File.exists?(expected_file_path), 'gzipped copy does not exist'
+      gz_content = Zlib::GzipReader.open(expected_file_path){|gz| gz.read}
+      assert_equal '//minified js', gz_content, 'gzipped copy does not match original'
     end
   end
 

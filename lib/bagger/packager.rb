@@ -4,6 +4,7 @@ require 'digest/md5'
 require 'addressable/uri'
 require 'uglifier'
 require 'rainpress'
+require 'zlib'
 
 module Bagger
   class Packager
@@ -22,7 +23,14 @@ module Bagger
     end
 
     def add_to_manifest(key, path)
-      @manifest[key] = File.expand_path(@path_prefix + "/" + path)
+      if @options[:extended_manifest]
+        @manifest[key] = {
+          :path => File.expand_path(@path_prefix + "/" + path),
+          :size => File.size(File.join(@target_dir, path))
+        }
+      else
+        @manifest[key] = File.expand_path(@path_prefix + "/" + path)
+      end
     end
 
     def to_manifest(path, keep_original = true)
@@ -83,6 +91,7 @@ module Bagger
         rewrite_urls_in_css(config[:target_path])
         compress_css(config[:target_path])
         to_manifest(config[:target_path], false)
+        gzip_target(config[:target_path]) if @options[:gzip]
       end
     end
 
@@ -123,6 +132,7 @@ module Bagger
         combine_files(config[:files], config[:target_path])
         compress_js(config[:target_path])
         to_manifest(config[:target_path], false)
+        gzip_target(config[:target_path]) if @options[:gzip]
       end
     end
 
@@ -177,6 +187,15 @@ module Bagger
         output << "\n"
       end
       File.open(target_path, "w") { |f| f.write(output) }
+    end
+
+    def gzip_target(target_path)
+      versioned_path = @manifest[File.join('/', target_path)]
+      versioned_path.sub!(@path_prefix, '')
+      gz_path = File.join(@target_dir, "#{versioned_path}.gz")
+      Zlib::GzipWriter.open(gz_path) do |gz|
+        gz << File.open(File.join(@target_dir, versioned_path)) { |f| f.read }
+      end
     end
 
     def calculate_stylesheets
