@@ -23,7 +23,14 @@ module Bagger
     end
 
     def add_to_manifest(key, path)
-      @manifest[key] = File.expand_path(@path_prefix + "/" + path)
+      if @options[:extended_manifest]
+        @manifest[key] = {
+          :path => File.expand_path(@path_prefix + "/" + path),
+          :size => File.size(File.join(@target_dir, path))
+        }
+      else
+        @manifest[key] = File.expand_path(@path_prefix + "/" + path)
+      end
     end
 
     def to_manifest(path, keep_original = true)

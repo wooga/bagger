@@ -91,6 +91,15 @@ class BaggerTest < Test::Unit::TestCase
       Bagger.bagit!(default_options.merge(:exclude_pattern => /.*\.txt/))
       assert_nil manifest['/test.txt']
     end
+
+    should 'support file sizes in an extended manifest' do
+      path = File.join(@source_dir, 'test.txt')
+      write_file(path, 'foo')
+      file_size = File.size(path)
+      Bagger.bagit!(default_options.merge(:extended_manifest => true))
+      assert_match /\/test\..*\.txt/, manifest['/test.txt']['path']
+      assert_equal file_size, manifest['/test.txt']['size']
+    end
   end
 
   context 'html 5 cache manifest' do
