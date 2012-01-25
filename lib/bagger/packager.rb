@@ -34,6 +34,7 @@ module Bagger
     end
 
     def to_manifest(path, keep_original = true)
+      debug "adding: #{path}"
       content = File.open(File.join(@target_dir, path)) { |f| f.read }
       extension = File.extname(path)
       basename = File.basename(path, extension)
@@ -57,12 +58,14 @@ module Bagger
     end
 
    def run
+      debug "reading files from #{@source_dir}"
       validate
       version_files
       combine_css
       combine_js
       generate_cache_manifests
       write_manifest
+      debug "files written to #{@target_dir}"
     end
 
     def write_manifest
@@ -224,6 +227,10 @@ module Bagger
 
     def exclude_file?(path)
       path =~ /\.(css|js)$/ || @exclude_files.include?(path) || (@exclude_pattern && path =~ @exclude_pattern)
+    end
+
+    def debug(message)
+      STDOUT.puts message if @options[:verbose]
     end
   end
 end

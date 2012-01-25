@@ -60,6 +60,7 @@ on the client side by using the following techniques:
 		:target_dir => target_dir,
 		:manifest_path => manifest_path,
     :gzip => false,
+    :verbose => false,
 		:cache_manifest_path => cache_manifest_path,
     		:path_prefix => '',
     		:css_path_prefix => '',
