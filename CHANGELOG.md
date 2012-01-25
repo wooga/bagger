@@ -1,5 +1,10 @@
 # CHANGELOG
 
+# v 0.5.0
+  
+  * gzip support for stylesheets and javascripts (Christian Lundgren)
+  * Extended manifest with info file size (Christian Lundgren)
+
 # v 0.4.0
 
   * Support for css_path_prefix allows rewritten urls in stylesheets to
