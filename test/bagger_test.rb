@@ -100,6 +100,11 @@ class BaggerTest < Test::Unit::TestCase
       assert_match /\/test\..*\.txt/, manifest['/test.txt']['path']
       assert_equal file_size, manifest['/test.txt']['size']
     end
+
+    should 'add the manifest itself if specified' do
+      Bagger.bagit!(default_options.merge(:manifest_key => '/manifest.json'))
+      assert manifest['/manifest.json']
+    end
   end
 
   context 'html 5 cache manifest' do

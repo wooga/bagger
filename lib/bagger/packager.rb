@@ -19,6 +19,7 @@ module Bagger
       @css_path_prefix = @options[:css_path_prefix] || ''
       @exclude_files = Array(@options[:exclude_files])
       @exclude_pattern = @options[:exclude_pattern]
+      @manifest_key = @options[:manifest_key]
       @manifest = {}
     end
 
@@ -64,9 +65,14 @@ module Bagger
       combine_css
       combine_js
       generate_cache_manifests
+      add_self
       write_manifest
       debug "files written to #{@target_dir}"
     end
+
+   def add_self
+     add_to_manifest(@manifest_key, File.basename(@manifest_path)) if @manifest_key
+   end
 
     def write_manifest
       File.open(@manifest_path, 'w') do |f|
