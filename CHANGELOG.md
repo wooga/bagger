@@ -1,5 +1,9 @@
 # CHANGELOG
 
+# v 0.6.0
+  * Add option to add the manifest itself to the manifest (Christian
+    Lundgren)
+
 # v 0.5.0
   
   * gzip support for stylesheets and javascripts (Christian Lundgren)
