@@ -33,8 +33,7 @@ on the client side by using the following techniques:
 	source_dir = "/applications/my_app/public"
   
 	# customize paths for file and cache manifest
-	manifest_path = File.join(target_dir, 'file_manifest.json') #defaults
-	to manifest.json
+	manifest_path = File.join(target_dir, 'file_manifest.json') # defaults to manifest.json
 
 	cache_manifest_path = 'cache/cache.manifest' # defaults to cache.manifest
 	
@@ -44,8 +43,8 @@ on the client side by using the following techniques:
 	stylesheets = ["css/style.css", "css/reset.css"]
 	javascripts = ["js/app.js", "js/utils.js"]
 
-	# define cache manifest bundles for directorfferent devices
-	# for convencien, the manfiest defined with `cache_manifest_path`
+	# define cache manifest bundles for different devices
+	# for convenience, the manifest defined with `cache_manifest_path`
 	# will always contain all resources
 	ipad_resources = ["images/troll-big.png"]
 	iphone_retina_resources = ["images/troll-retina.png"]
