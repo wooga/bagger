@@ -129,4 +129,3 @@ check the build status on [travis.ci](http://travis-ci.org/wooga/bagger)
 
 * [jammit](https://github.com/documentcloud/jammit)
 * [Rails 3 asset pipeline](http://blog.nodeta.com/2011/06/14/rails-3-1-asset-pipeline-in-the-real-world/)
-* [assets.io](http://www.assets.io/)
