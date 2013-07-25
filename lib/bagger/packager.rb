@@ -105,16 +105,15 @@ module Bagger
     end
 
     def rewrite_urls_in_css(stylesheet_path)
-      url_regex = /(^|[{;,])(.*?url\(\s*['"]?)(.*?)(['"]?\s*\).*?)([,;}]|$)/ui
-      behavior_regex = /behavior:\s*url/ui
+      url_regex = /(url\(\s*['"]?)([^#].*?)(['"]?\s*\).*?)/ui
       data_regex = /^\s*data:/ui
       input = File.open(File.join(@target_dir, stylesheet_path)){|f| f.read}
       output = input.gsub(url_regex) do |full_match|
-        pre, url_match, post = ($1 + $2), $3, ($4 + $5)
-        if behavior_regex.match(pre) || data_regex.match(url_match)
+        pre, url_match, post = $1, $2, $3
+        if data_regex.match(url_match)
           full_match
         else
-          path = Addressable::URI.parse("/") + url_match
+          path = Addressable::URI.parse('/') + url_match
           target_url = @manifest[path.to_s]
           if target_url
             pre + @css_path_prefix + target_url + post
@@ -154,7 +153,7 @@ module Bagger
     def generate_cache_manifests
       cache_manifests = @options[:cache_manifests] || []
       if @cache_manifest_path
-        cache_manifests << { 
+        cache_manifests << {
           :target_path => @cache_manifest_path,
           :files => @manifest.keys
         }
