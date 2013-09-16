@@ -1,4 +1,11 @@
 # CHANGELOG
+# v 0.6.1
+
+  * improve CSS URL rewriting
+  * fix rewriting for certain multi-URL properties
+  * correctly rewrite IE behavior URLs unless the reference objects or default behaviors
+
+  All changes by Martin Rehfeld
 
 # v 0.6.0
   * Add option to add the manifest itself to the manifest (Christian
